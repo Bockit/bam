@@ -7,7 +7,6 @@ define([
     'cs!src/model'
     'cs!src/collection'
 
-    'cs!src/modularview'
     'cs!src/tabularview'
 ], (
     App
@@ -16,7 +15,6 @@ define([
     Model
     Collection
 
-    ModularView
     TabularView
 ) ->
     return {
@@ -26,7 +24,6 @@ define([
         Model: Model
         Collection: Collection
 
-        ModularView: ModularView
         TabularView: TabularView
     }
 )

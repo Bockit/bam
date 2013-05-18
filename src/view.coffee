@@ -1,4 +1,4 @@
-define(['backbone', 'jquery'], (Backbone, $) ->
+define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
     class View extends Backbone
 
@@ -6,18 +6,41 @@ define(['backbone', 'jquery'], (Backbone, $) ->
         children: []
         eventPrefix: ''
 
+        initialState: null
+        state: null
+        priorState: null
+
+        events: null
+        setup_events: null
+
+        # states:
+        #     'setup': 'setup'
+
+        # transitions:
+        #     from: null, to: setup, func: 'nullToSetup'
+
+
+        ###
+        Ensure the classname is applied, then set the parent and children if any
+        are passed in. Does the normal backbone constructor and then does the 
+        first state change.
+        ###
         constructor: (options) ->
             if options.el then @ensureClass(options.el, options.className)
             if options.parent then @setParent(options.parent)
             if options.children?.length then @addChildren()
 
+            @root = @getRoot()
+
             super(options)
 
-            # Ensure classnames are applied when elements are passed in rather
-            # than created on the fly
-            if options.el and @className
-                (@$el.addClass(c) for c in @className.split(' '))
+            @initialState = options.initialState ? @initialSate
+            @changeState(@initialState)
 
+        ###
+        Used to ensure that the className property of the view is applied to an 
+        el passed in as an option.
+        ###
         ensureClass: (el, className=@className) ->
             $(el).addClass(className)
 
@@ -33,7 +56,7 @@ define(['backbone', 'jquery'], (Backbone, $) ->
         addChild: (view, silent=false) ->
             @children.add(view)
 
-            unless silent then @trigger(@eventPrefix + 'addchild', view)
+            unless silent then @trigger('addchild', view: view)
 
         ###
         Sets the parent element of the view.
@@ -43,7 +66,7 @@ define(['backbone', 'jquery'], (Backbone, $) ->
         setParent: (parent, silent=false) ->
             @parent = parent
 
-            unless silent then @trigger(@eventPrefix + 'setparent', parent)
+            unless silent then @trigger('setparent', parent: parent)
 
         ###
         Parent and Child accessors.
@@ -53,7 +76,21 @@ define(['backbone', 'jquery'], (Backbone, $) ->
         hasChildren: -> @children.length
         getChildren: -> @children
 
+        getRoot: ->
+            root = @
+            root = root.getParent() while root.hasParent()
+
+            return root
+
+        ###
+        Iterates over each child view
+        ###
         each: (func) -> _.each(@children, func)
+
+        ###
+        Performs a map on all the child views
+        ###
+        map: (func) -> _.map(@children, func)
         
         ###
         Invokes the function 'funcName' on all child views.
@@ -66,4 +103,40 @@ define(['backbone', 'jquery'], (Backbone, $) ->
         remove: -> 
             @invoke('remove')
             super()
+
+        ###
+        Change state from one to another.
+
+        First calls the transition method if it exists
+        Fires the transition event
+
+        Then changes the state, calling the state action method if it exists
+        Fires the changestate event
+        ###
+        changeState: (state) ->
+            # Transition
+            tran = _.findWhere(@transitions, from: @state, to: state)
+            if tran and _.isFunction(@[tran.func]) then @[tran.func]()
+            @root.trigger(@eventPrefix + 'transition', from: @state, to: state)
+
+            # Change
+            @priorState = @state
+            @state = state
+            if _.isFunction(@[@states[state]]) then @[@states[state]]()
+            @root.trigger(@eventPrefix + 'changestate', state: @state)
+
+            @undelegateEvents()
+            @delegateEvents(@calcEvents(state))
+
+        ###
+        Creates a new events object, from this.events and this.`state`_events
+        ###
+        calcEvents: (state) ->
+            events = {}
+            if @events then events = _.extend(events, @events)
+            unless state is null
+                if @[state + '_events']
+                    events = _.extend(events, @[state + '_events'])
+            
+            return events
 )
