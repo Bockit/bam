@@ -19,6 +19,7 @@
             "exports": "Backbone"
         }
     },
+    "optimize": "none",
     "out": "build/bam.js",
     "exclude": ["coffee-script"],
     "stubModules": ["cs"],

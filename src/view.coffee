@@ -1,9 +1,9 @@
 define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
-    class View extends Backbone
+    class View extends Backbone.View
 
         parent: null
-        children: []
+        children: null
         eventPrefix: ''
 
         initialState: null
@@ -11,7 +11,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         priorState: null
 
         events: null
-        setup_events: null
+        # setup_events: null
 
         # states:
         #     'setup': 'setup'
@@ -26,6 +26,8 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         first state change.
         ###
         constructor: (options) ->
+            @children = []
+            
             if options.el then @ensureClass(options.el, options.className)
             if options.parent then @setParent(options.parent)
             if options.children?.length then @addChildren()
@@ -34,7 +36,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
             super(options)
 
-            @initialState = options.initialState ? @initialSate
+            @initialState = options.initialState ? @initialState
             @changeState(@initialState)
 
         ###
@@ -54,7 +56,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         Adds a view as a child of this view.
         ###
         addChild: (view, silent=false) ->
-            @children.add(view)
+            @children.push(view)
 
             unless silent then @trigger('addchild', view: view)
 
@@ -75,7 +77,13 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         getParent: -> @parent
         hasChildren: -> @children.length
         getChildren: -> @children
+        removeChild: (child) -> @children = _.without(@children, child)
+        removeChildren: (children) -> 
+            @children = _.difference(@children, children)
 
+        ###
+        Gets the root view for a particular view. Can be itself.
+        ###
         getRoot: ->
             root = @
             root = root.getParent() while root.hasParent()
@@ -102,6 +110,8 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         ###
         remove: -> 
             @invoke('remove')
+            @children = []
+            @parent = null
             super()
 
         ###
@@ -127,6 +137,8 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
             @undelegateEvents()
             @delegateEvents(@calcEvents(state))
+
+        become: (state) -> @changeState(state)
 
         ###
         Creates a new events object, from this.events and this.`state`_events
