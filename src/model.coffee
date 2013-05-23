@@ -1,5 +1,5 @@
 define(['backbone'], (Backbone) ->
 
-    class Collection extends Backbone.Collection
+    class Model extends Backbone.Model
 
 )
