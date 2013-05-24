@@ -13076,8 +13076,8 @@ define("backbone", ["underscore","jquery"], (function (global) {
         var transition;
 
         transition = _.findWhere(this.transitions, {
-          from: this.state,
-          to: state
+          from: from,
+          to: to
         });
         if (!transition) {
           transition = _.first(_.filter(this.transitions, function(t) {

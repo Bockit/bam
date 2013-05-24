@@ -163,7 +163,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
         calcTransition: (from, to) ->
             # Look for a specific transition first
-            transition = _.findWhere(@transitions, from: @state, to: state)
+            transition = _.findWhere(@transitions, from: from, to: to)
 
             # Go through in order, looking for a wildcard transition to match.
             unless transition
