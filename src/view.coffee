@@ -133,21 +133,27 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
                 success = true
 
             if sucess is false then return false
+
             @root.trigger(@eventPrefix + 'transition', {
                 from: @state
                 to: state
                 options: options
             })
 
+
             # Change state
             @priorState = @state
             @state = state
+
             if _.isFunction(@[@states[state]]) then @[@states[state]](options)
+
             @root.trigger(@eventPrefix + 'changestate', {
                 state: @state
                 options: options
             })
 
+
+            # Bind new events
             @undelegateEvents()
             @delegateEvents(@calcEvents(state))
 
@@ -161,11 +167,10 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
             # Go through in order, looking for a wildcard transition to match.
             unless transition
-                for t in transitions
-                    if (t.from is from or t.from is '*') and
-                       (t.to is to or t.to is '*')
-
-                        transition = t
+                transition = _.first(_.filter(@transitions, (t) ->
+                    return (t.from is from or t.from is '*') and
+                           (t.to is to or t.to is '*')
+                ))
 
             return transition
 

@@ -13073,19 +13073,16 @@ define("backbone", ["underscore","jquery"], (function (global) {
       };
 
       View.prototype.calcTransition = function(from, to) {
-        var t, transition, _i, _len;
+        var transition;
 
         transition = _.findWhere(this.transitions, {
           from: this.state,
           to: state
         });
         if (!transition) {
-          for (_i = 0, _len = transitions.length; _i < _len; _i++) {
-            t = transitions[_i];
-            if ((t.from === from || t.from === '*') && (t.to === to || t.to === '*')) {
-              transition = t;
-            }
-          }
+          transition = _.first(_.filter(this.transitions, function(t) {
+            return (t.from === from || t.from === '*') && (t.to === to || t.to === '*');
+          }));
         }
         return transition;
       };
