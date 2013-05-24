@@ -161,12 +161,11 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
             # Go through in order, looking for a wildcard transition to match.
             unless transition
-                for t in transitions {
+                for t in transitions
                     if (t.from is from or t.from is '*') and
                        (t.to is to or t.to is '*')
 
                         transition = t
-                }
 
             return transition
 

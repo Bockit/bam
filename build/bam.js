@@ -12854,7 +12854,7 @@ define("backbone", ["underscore","jquery"], (function (global) {
 
       /*
       Ensure the classname is applied, then set the parent and children if any
-      are passed in. Does the normal backbone constructor and then does the 
+      are passed in. Does the normal backbone constructor and then does the
       first state change.
       */
 
@@ -12879,7 +12879,7 @@ define("backbone", ["underscore","jquery"], (function (global) {
       }
 
       /*
-      Used to ensure that the className property of the view is applied to an 
+      Used to ensure that the className property of the view is applied to an
       el passed in as an option.
       */
 
@@ -13037,34 +13037,57 @@ define("backbone", ["underscore","jquery"], (function (global) {
       */
 
 
-      View.prototype.changeState = function(state) {
-        var tran;
+      View.prototype.changeState = function(state, options) {
+        var success, tran;
 
-        tran = _.findWhere(this.transitions, {
-          from: this.state,
-          to: state
-        });
+        tran = this.calcTransition(this.state, state);
         if (tran && _.isFunction(this[tran.func])) {
-          this[tran.func]();
+          success = this[tran.func](this.state, state, options);
+        } else {
+          success = true;
+        }
+        if (sucess === false) {
+          return false;
         }
         this.root.trigger(this.eventPrefix + 'transition', {
           from: this.state,
-          to: state
+          to: state,
+          options: options
         });
         this.priorState = this.state;
         this.state = state;
         if (_.isFunction(this[this.states[state]])) {
-          this[this.states[state]]();
+          this[this.states[state]](options);
         }
         this.root.trigger(this.eventPrefix + 'changestate', {
-          state: this.state
+          state: this.state,
+          options: options
         });
         this.undelegateEvents();
-        return this.delegateEvents(this.calcEvents(state));
+        this.delegateEvents(this.calcEvents(state));
+        return true;
       };
 
       View.prototype.become = function(state) {
         return this.changeState(state);
+      };
+
+      View.prototype.calcTransition = function(from, to) {
+        var t, transition, _i, _len;
+
+        transition = _.findWhere(this.transitions, {
+          from: this.state,
+          to: state
+        });
+        if (!transition) {
+          for (_i = 0, _len = transitions.length; _i < _len; _i++) {
+            t = transitions[_i];
+            if ((t.from === from || t.from === '*') && (t.to === to || t.to === '*')) {
+              transition = t;
+            }
+          }
+        }
+        return transition;
       };
 
       /*
