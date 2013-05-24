@@ -132,7 +132,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
             else
                 success = true
 
-            if sucess is false then return false
+            if success is false then return false
 
             @root.trigger(@eventPrefix + 'transition', {
                 from: @state
