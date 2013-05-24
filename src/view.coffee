@@ -123,26 +123,35 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         Then changes the state, calling the state action method if it exists
         Fires the changestate event
         ###
-        changeState: (state) ->
+        changeState: (state, options) ->
             # Transition
             tran = @calcTransition(@state, state)
 
             if tran and _.isFunction(@[tran.func])
-                success = @[tran.func]()
+                success = @[tran.func](@state, state, options)
             else
                 success = true
 
             if sucess is false then return false
-            @root.trigger(@eventPrefix + 'transition', from: @state, to: state)
+            @root.trigger(@eventPrefix + 'transition', {
+                from: @state
+                to: state
+                options: options
+            })
 
             # Change state
             @priorState = @state
             @state = state
-            if _.isFunction(@[@states[state]]) then @[@states[state]]()
-            @root.trigger(@eventPrefix + 'changestate', state: @state)
+            if _.isFunction(@[@states[state]]) then @[@states[state]](options)
+            @root.trigger(@eventPrefix + 'changestate', {
+                state: @state
+                options: options
+            })
 
             @undelegateEvents()
             @delegateEvents(@calcEvents(state))
+
+            return true
 
         become: (state) -> @changeState(state)
 
