@@ -22,12 +22,12 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
         ###
         Ensure the classname is applied, then set the parent and children if any
-        are passed in. Does the normal backbone constructor and then does the 
+        are passed in. Does the normal backbone constructor and then does the
         first state change.
         ###
         constructor: (options) ->
             @children = []
-            
+
             if options.el then @ensureClass(options.el, options.className)
             if options.parent then @setParent(options.parent)
             if options.children?.length then @addChildren()
@@ -40,7 +40,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
             @changeState(@initialState)
 
         ###
-        Used to ensure that the className property of the view is applied to an 
+        Used to ensure that the className property of the view is applied to an
         el passed in as an option.
         ###
         ensureClass: (el, className=@className) ->
@@ -78,7 +78,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         hasChildren: -> @children.length
         getChildren: -> @children
         removeChild: (child) -> @children = _.without(@children, child)
-        removeChildren: (children) -> 
+        removeChildren: (children) ->
             @children = _.difference(@children, children)
 
         ###
@@ -99,7 +99,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         Performs a map on all the child views
         ###
         map: (func) -> _.map(@children, func)
-        
+
         ###
         Invokes the function 'funcName' on all child views.
         ###
@@ -108,7 +108,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         ###
         Calls remove on all child views before removing itself
         ###
-        remove: -> 
+        remove: ->
             @invoke('remove')
             @children = []
             @parent = null
@@ -125,11 +125,17 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         ###
         changeState: (state) ->
             # Transition
-            tran = _.findWhere(@transitions, from: @state, to: state)
-            if tran and _.isFunction(@[tran.func]) then @[tran.func]()
+            tran = @calcTransition(@state, state)
+
+            if tran and _.isFunction(@[tran.func])
+                success = @[tran.func]()
+            else
+                success = true
+
+            if sucess is false then return false
             @root.trigger(@eventPrefix + 'transition', from: @state, to: state)
 
-            # Change
+            # Change state
             @priorState = @state
             @state = state
             if _.isFunction(@[@states[state]]) then @[@states[state]]()
@@ -140,6 +146,21 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
         become: (state) -> @changeState(state)
 
+        calcTransition: (from, to) ->
+            # Look for a specific transition first
+            transition = _.findWhere(@transitions, from: @state, to: state)
+
+            # Go through in order, looking for a wildcard transition to match.
+            unless transition
+                for t in transitions {
+                    if (t.from is from or t.from is '*') and
+                       (t.to is to or t.to is '*')
+
+                        transition = t
+                }
+
+            return transition
+
         ###
         Creates a new events object, from this.events and this.`state`_events
         ###
@@ -149,6 +170,6 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
             unless state is null
                 if @[state + '_events']
                     events = _.extend(events, @[state + '_events'])
-            
+
             return events
 )
