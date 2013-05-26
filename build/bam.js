@@ -13046,7 +13046,7 @@ define("backbone", ["underscore","jquery"], (function (global) {
         } else {
           success = true;
         }
-        if (sucess === false) {
+        if (success === false) {
           return false;
         }
         this.root.trigger(this.eventPrefix + 'transition', {
@@ -13073,12 +13073,30 @@ define("backbone", ["underscore","jquery"], (function (global) {
       };
 
       View.prototype.calcTransition = function(from, to) {
-        var transition;
+        var matchState, transition;
 
         transition = _.findWhere(this.transitions, {
           from: from,
           to: to
         });
+        matchState = function(state, rule) {
+          var excludes;
+
+          if (!rule) {
+            return false;
+          }
+          if (state === rule) {
+            return true;
+          }
+          if (rule === '*') {
+            return true;
+          }
+          if (rule[0] === '*') {
+            excludes = rule.split('!').slice(1);
+            return !_.any(excludes, rule);
+          }
+          return false;
+        };
         if (!transition) {
           transition = _.first(_.filter(this.transitions, function(t) {
             return (t.from === from || t.from === '*') && (t.to === to || t.to === '*');

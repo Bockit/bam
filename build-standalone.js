@@ -20,11 +20,11 @@
         }
     },
     "optimize": "none",
-    "out": "build/bam.js",
+    "out": "build/bam-standalone.js",
     "exclude": ["coffee-script"],
     "stubModules": ["cs"],
     "wrap": {
-        "startFile": "src/start.frag",
-        "endFile": "src/end.frag"
+        "startFile": "src/fragments/standalone-start.frag",
+        "endFile": "src/fragments/standalone-end.frag"
     }
 }

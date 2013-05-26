@@ -165,9 +165,25 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
             # Look for a specific transition first
             transition = _.findWhere(@transitions, from: from, to: to)
 
+            matchState = (state, rule) ->
+                unless rule then return false # null, empty string
+                if state is rule then return true # 'loading' === 'loading'
+                if rule is '*' then return true # 'Staight wildcard'
+
+                # Starts with wildcard
+                if rule[0] is '*'
+                    excludes = rule.split('!').slice(1)
+
+                    return not _.any(excludes, rule)
+
+                return false
+
+                
+
             # Go through in order, looking for a wildcard transition to match.
             unless transition
                 transition = _.first(_.filter(@transitions, (t) ->
+
                     return (t.from is from or t.from is '*') and
                            (t.to is to or t.to is '*')
                 ))
