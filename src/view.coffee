@@ -32,8 +32,6 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
             if options.parent then @setParent(options.parent)
             if options.children?.length then @addChildren()
 
-            @root = @getRoot()
-
             super(options)
 
             @initialState = options.initialState ? @initialState
@@ -57,6 +55,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         ###
         addChild: (view, silent=false) ->
             @children.push(view)
+            view.setParent(@)
 
             unless silent then @trigger('addchild', view: view)
 
@@ -84,7 +83,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         ###
         Gets the root view for a particular view. Can be itself.
         ###
-        getRoot: ->
+        root: ->
             root = @
             root = root.getParent() while root.hasParent()
 
@@ -134,7 +133,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
             if success is false then return false
 
-            @root.trigger(@eventPrefix + 'transition', {
+            @root().trigger(@eventPrefix + 'transition', {
                 from: @state
                 to: state
                 options: options
@@ -147,7 +146,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
             if _.isFunction(@[@states[state]]) then @[@states[state]](options)
 
-            @root.trigger(@eventPrefix + 'changestate', {
+            @root().trigger(@eventPrefix + 'changestate', {
                 state: @state
                 options: options
             })
@@ -174,18 +173,16 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
                 if rule[0] is '*'
                     excludes = rule.split('!').slice(1)
 
-                    return not _.any(excludes, rule)
+                    return not _.contains(excludes, state)
 
                 return false
 
-                
+
 
             # Go through in order, looking for a wildcard transition to match.
             unless transition
                 transition = _.first(_.filter(@transitions, (t) ->
-
-                    return (t.from is from or t.from is '*') and
-                           (t.to is to or t.to is '*')
+                    return matchState(from, t.from) and matchState(to, t.to)
                 ))
 
             return transition
