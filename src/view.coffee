@@ -27,6 +27,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         ###
         constructor: (options) ->
             @children = []
+            @funcQueues = {}
 
             if options.el then @ensureClass(options.el, options.className)
             if options.parent then @setParent(options.parent)
@@ -92,17 +93,18 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         ###
         Iterates over each child view
         ###
-        each: (func) -> _.each(@children, func)
+        eachChild: (func) -> _.each(@children, func)
 
         ###
         Performs a map on all the child views
         ###
-        map: (func) -> _.map(@children, func)
+        mapChildren: (func) -> _.map(@children, func)
 
         ###
         Invokes the function 'funcName' on all child views.
         ###
-        invoke: (funcName) -> _.invoke(@children, funcName)
+        invokeChildren: (funcName, args...) ->
+            return _.invoke(@children, funcName, args...)
 
         ###
         Calls remove on all child views before removing itself
