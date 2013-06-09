@@ -2,23 +2,23 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
     class View extends Backbone.View
 
+        # Parent View
         parent: null
+
+        # Child views, is initialised as an array
         children: null
+
+        # The prefix to use for root view state change events
         eventPrefix: ''
 
+        # The initial state to change to after construction
         initialState: null
+
+        # The current state of the view
         state: null
+
+        # The previous state of the view
         priorState: null
-
-        events: null
-        # setup_events: null
-
-        # states:
-        #     'setup': 'setup'
-
-        # transitions:
-        #     from: null, to: setup, func: 'nullToSetup'
-
 
         ###
         Ensure the classname is applied, then set the parent and children if any
@@ -158,8 +158,28 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
             return true
 
+        ###
+        Sugar method for changeState
+        ###
         become: (state) -> @changeState(state)
 
+        ###
+        Given a state from and to, figure out what transition applies.
+
+        First we look for a direct match transition, i.e.:
+
+            from 'loading', to 'idle'
+
+        If we don't get a match on that, we'll step through the list of 
+        transitions in order, looking for the first transition that matches.
+
+        '*' matches any state including null for initial state change.
+
+        '*!idle' will match anything, except idle. Exceptions can be chained
+        like so: '*!idle!errored'. If you want to exclude a null state, you can
+        still do '*!null' as Bam coerces states to strings before comparing them
+        to wildcard exclusions.
+        ###
         calcTransition: (from, to) ->
             # Look for a specific transition first
             transition = _.findWhere(@transitions, from: from, to: to)
@@ -175,6 +195,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
                     return not _.contains(excludes, '' + state)
 
+                # No match
                 return false
 
 
