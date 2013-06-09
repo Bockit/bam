@@ -29,7 +29,7 @@ Gets the model before the model `model` in the collection. Ideally used in a col
 
 Returns `null` if the model doesn't exist in the collection or if the model is the first in the collection.
 
-######`after(model)`
+######after(model)
 Same as `before(model)` but looks for the model afterwards.
 
 Returns `null` if the model doesn't exist in the collection or if the model is the last in the collection.
