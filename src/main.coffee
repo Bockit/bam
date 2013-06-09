@@ -8,7 +8,6 @@ define([
     View
     Model
     Collection
-    TabularView
 ) ->
         View: View
         Model: Model
