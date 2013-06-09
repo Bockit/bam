@@ -12830,7 +12830,8 @@ define("backbone", ["underscore","jquery"], (function (global) {
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __slice = [].slice;
 
   define('cs!src/view',['backbone', 'jquery', 'underscore'], function(Backbone, $, _) {
     var View;
@@ -12863,6 +12864,7 @@ define("backbone", ["underscore","jquery"], (function (global) {
         var _ref, _ref1;
 
         this.children = [];
+        this.funcQueues = {};
         if (options.el) {
           this.ensureClass(options.el, options.className);
         }
@@ -12992,7 +12994,7 @@ define("backbone", ["underscore","jquery"], (function (global) {
       */
 
 
-      View.prototype.each = function(func) {
+      View.prototype.eachChild = function(func) {
         return _.each(this.children, func);
       };
 
@@ -13001,7 +13003,7 @@ define("backbone", ["underscore","jquery"], (function (global) {
       */
 
 
-      View.prototype.map = function(func) {
+      View.prototype.mapChildren = function(func) {
         return _.map(this.children, func);
       };
 
@@ -13010,8 +13012,11 @@ define("backbone", ["underscore","jquery"], (function (global) {
       */
 
 
-      View.prototype.invoke = function(funcName) {
-        return _.invoke(this.children, funcName);
+      View.prototype.invokeChildren = function() {
+        var args, funcName;
+
+        funcName = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+        return _.invoke.apply(_, [this.children, funcName].concat(__slice.call(args)));
       };
 
       /*
