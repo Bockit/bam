@@ -175,7 +175,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
                 if rule[0] is '*'
                     excludes = rule.split('!').slice(1)
 
-                    return not _.contains(excludes, state)
+                    return not _.contains(excludes, '' + state)
 
                 return false
 
