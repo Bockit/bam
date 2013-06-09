@@ -4,7 +4,6 @@ define([
     'cs!src/view'
     'cs!src/model'
     'cs!src/collection'
-    'cs!src/tabularview'
 ], (
     View
     Model
@@ -14,6 +13,4 @@ define([
         View: View
         Model: Model
         Collection: Collection
-
-        TabularView: TabularView
 )
