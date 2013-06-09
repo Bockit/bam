@@ -135,11 +135,9 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
             if success is false then return false
 
-            @root().trigger(@eventPrefix + 'transition', {
-                from: @state
-                to: state
-                options: options
-            })
+            pkg = from: @state, to: state, options: options
+            @trigger('transition', pkg)
+            @root().trigger(@eventPrefix + 'transition', pkg)
 
 
             # Change state
@@ -148,10 +146,10 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
             if _.isFunction(@[@states[state]]) then @[@states[state]](options)
 
-            @root().trigger(@eventPrefix + 'changestate', {
-                state: @state
-                options: options
-            })
+            pkg = state: @state, options: options
+            @trigger('changestate', pkg)
+            @root().trigger(@eventPrefix + 'changestate', pkg)
+
 
 
             # Bind new events
