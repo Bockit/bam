@@ -24,12 +24,12 @@ Each Model, Collection and View inherits everything from Backbone's Model, Colle
 
 #### Bam.Collection
 
-**`before(model)`**  
+######`before(model)`
 Gets the model before the model `model` in the collection. Ideally used in a collection with a comparator so there is some kind of sort order.
 
 Returns null if the model doesn't exist in the collection or if the model is the first in the collection.
 
-**`after(model)`**
+######`after(model)`
 Same as `before(model)` but looks for the model afterwards.
 
 Returns null if the model doesn't exist in the collection or if the model is the last in the collection.
