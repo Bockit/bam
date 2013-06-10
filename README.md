@@ -17,8 +17,11 @@ Each Model, Collection and View inherits everything from Backbone's Model, Colle
 
 #### Bam.View
 
+A Bam View is a tree and, separately, a finite state machine. The tree helps with the heirarchy of components, and the finite state machine helps with transferring user interactions and data changes into interface actions.
 
 #### Bam.Model
+
+Models have everything a Backbone Model has, with a couple of utility functions for accessing models before and after them in a collection.
 
 
 ###### next()
@@ -34,6 +37,8 @@ If the model is not in a collection it will return `null`. If the model is the l
 
 
 #### Bam.Collection
+
+Collections hevae everything a Backbone Collection has, with a couple of utility functions for getting the models before and after other models in the collection.
 
 
 ###### before(model)
