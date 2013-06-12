@@ -12851,8 +12851,6 @@ define("backbone", ["underscore","jquery"], (function (global) {
 
       View.prototype.priorState = null;
 
-      View.prototype.events = null;
-
       /*
       Ensure the classname is applied, then set the parent and children if any
       are passed in. Does the normal backbone constructor and then does the
@@ -13043,7 +13041,7 @@ define("backbone", ["underscore","jquery"], (function (global) {
 
 
       View.prototype.changeState = function(state, options) {
-        var success, tran;
+        var pkg, success, tran;
 
         tran = this.calcTransition(this.state, state);
         if (tran && _.isFunction(this[tran.func])) {
@@ -13054,28 +13052,56 @@ define("backbone", ["underscore","jquery"], (function (global) {
         if (success === false) {
           return false;
         }
-        this.root().trigger(this.eventPrefix + 'transition', {
+        pkg = {
           from: this.state,
           to: state,
           options: options
-        });
+        };
+        this.trigger('transition', pkg);
+        this.root().trigger(this.eventPrefix + 'transition', pkg);
         this.priorState = this.state;
         this.state = state;
         if (_.isFunction(this[this.states[state]])) {
           this[this.states[state]](options);
         }
-        this.root().trigger(this.eventPrefix + 'changestate', {
+        pkg = {
           state: this.state,
           options: options
-        });
+        };
+        this.trigger('changestate', pkg);
+        this.root().trigger(this.eventPrefix + 'changestate', pkg);
         this.undelegateEvents();
         this.delegateEvents(this.calcEvents(state));
         return true;
       };
 
+      /*
+      Sugar method for changeState
+      */
+
+
       View.prototype.become = function(state) {
         return this.changeState(state);
       };
+
+      /*
+      Given a state from and to, figure out what transition applies.
+      
+      First we look for a direct match transition, i.e.:
+      
+          from 'loading', to 'idle'
+      
+      If we don't get a match on that, we'll step through the list of 
+      transitions in order, looking for the first transition that matches.
+      
+      '*' matches any state including null for initial state change.
+      
+      '*!idle' will match anything, except idle. Exceptions can be chained
+      like so: '*!idle!errored'. If you want to exclude a null state, you can
+      still do '*!null' as Bam coerces states to strings before comparing them
+      to wildcard exclusions.
+      */
+
 
       View.prototype.calcTransition = function(from, to) {
         var matchState, transition;
@@ -13098,7 +13124,7 @@ define("backbone", ["underscore","jquery"], (function (global) {
           }
           if (rule[0] === '*') {
             excludes = rule.split('!').slice(1);
-            return !_.contains(excludes, state);
+            return !_.contains(excludes, '' + state);
           }
           return false;
         };
@@ -13152,6 +13178,18 @@ define("backbone", ["underscore","jquery"], (function (global) {
         return _ref;
       }
 
+      Model.prototype.next = function() {
+        var _ref1;
+
+        return (_ref1 = this.collection) != null ? _ref1.after(this) : void 0;
+      };
+
+      Model.prototype.prev = function() {
+        var _ref1;
+
+        return (_ref1 = this.collection) != null ? _ref1.before(this) : void 0;
+      };
+
       return Model;
 
     })(Backbone.Model);
@@ -13174,6 +13212,26 @@ define("backbone", ["underscore","jquery"], (function (global) {
         return _ref;
       }
 
+      Collection.prototype.before = function(model) {
+        var index;
+
+        index = this.indexOf(model);
+        if (index === -1 || index === 0) {
+          return null;
+        }
+        return this.at(index - 1);
+      };
+
+      Collection.prototype.after = function(model) {
+        var index;
+
+        index = this.indexOf(model);
+        if (index === -1 || index === this.length - 1) {
+          return null;
+        }
+        return this.at(index + 1);
+      };
+
       return Collection;
 
     })(Backbone.Collection);
@@ -13182,34 +13240,11 @@ define("backbone", ["underscore","jquery"], (function (global) {
 }).call(this);
 
 (function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  define('cs!src/tabularview',['cs!src/view'], function(View) {
-    var TabularView, _ref;
-
-    return TabularView = (function(_super) {
-      __extends(TabularView, _super);
-
-      function TabularView() {
-        _ref = TabularView.__super__.constructor.apply(this, arguments);
-        return _ref;
-      }
-
-      return TabularView;
-
-    })(View);
-  });
-
-}).call(this);
-
-(function() {
-  define('cs!src/main',['cs!src/view', 'cs!src/model', 'cs!src/collection', 'cs!src/tabularview'], function(View, Model, Collection, TabularView) {
+  define('cs!src/main',['cs!src/view', 'cs!src/model', 'cs!src/collection'], function(View, Model, Collection) {
     return {
       View: View,
       Model: Model,
-      Collection: Collection,
-      TabularView: TabularView
+      Collection: Collection
     };
   });
 

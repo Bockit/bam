@@ -65,3 +65,10 @@ Usage
 API
 ---
 
+
+TODO
+----
+
+* Documentation
+* BAM! logo
+* Change from `eventPrefix` to `namespace`
