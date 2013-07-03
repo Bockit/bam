@@ -1,6 +1,20 @@
-define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
+define([
+    'backbone'
+    'jquery'
+    'underscore'
+
+    'cs!src/decoratable'
+], (
+    Backbone
+    $
+    _
+
+    Decoratable
+) ->
 
     class View extends Backbone.View
+        @::mixin(Decoratable)
+
 
         # Parent View
         parent: null
@@ -9,7 +23,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         children: null
 
         # The prefix to use for root view state change events
-        eventPrefix: ''
+        namespace: ''
 
         # The initial state to change to after construction
         initialState: null
@@ -26,8 +40,12 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
         first state change.
         ###
         constructor: (options) ->
+
+
             @children = []
             @funcQueues = {}
+
+            @decorateMethods(@decorators)
 
             if options.el then @ensureClass(options.el, options.className)
             if options.parent then @setParent(options.parent)
@@ -137,7 +155,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
             pkg = from: @state, to: state, options: options
             @trigger('transition', pkg)
-            @root().trigger(@eventPrefix + 'transition', pkg)
+            @root().trigger(@namespace + '.transition', pkg)
 
 
             # Change state
@@ -148,7 +166,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
             pkg = state: @state, options: options
             @trigger('changestate', pkg)
-            @root().trigger(@eventPrefix + 'changestate', pkg)
+            @root().trigger(@namespace + '.changestate', pkg)
 
 
 
@@ -170,7 +188,7 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
 
             from 'loading', to 'idle'
 
-        If we don't get a match on that, we'll step through the list of 
+        If we don't get a match on that, we'll step through the list of
         transitions in order, looking for the first transition that matches.
 
         '*' matches any state including null for initial state change.
@@ -219,4 +237,9 @@ define(['backbone', 'jquery', 'underscore'], (Backbone, $, _) ->
                     events = _.extend(events, @[state + '_events'])
 
             return events
+
+
+        mixin: (Class) ->
+            for key, value of Class
+                @::[key] = value
 )
