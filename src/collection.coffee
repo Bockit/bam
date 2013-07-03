@@ -4,7 +4,7 @@ define(['backbone'], (Backbone) ->
 
         before: (model) ->
             index = @indexOf(model)
-            
+
             if index is -1 or index is 0 then return null
 
             return @at(index - 1)
@@ -15,5 +15,7 @@ define(['backbone'], (Backbone) ->
             if index is -1 or index is @length - 1 then return null
 
             return @at(index + 1)
+
+        all: -> @models.slice()
 
 )

@@ -3,7 +3,7 @@ define([
     'jquery'
     'underscore'
 
-    'cs!src/decoratable'
+    'cs!lib/bam/decoratable'
 ], (
     Backbone
     $
@@ -13,6 +13,16 @@ define([
 ) ->
 
     class View extends Backbone.View
+
+        ###
+        Inline functionality to mixin classes
+
+        `@::mixin(ClassName)` is how you do it.
+        ###
+        mixin: (Class) ->
+            for key, value of Class::
+                @[key] = value
+
         @::mixin(Decoratable)
 
 
@@ -40,10 +50,8 @@ define([
         first state change.
         ###
         constructor: (options) ->
-
-
             @children = []
-            @funcQueues = {}
+            @funcQueue = []
 
             @decorateMethods(@decorators)
 
@@ -74,7 +82,6 @@ define([
         ###
         addChild: (view, silent=false) ->
             @children.push(view)
-            view.setParent(@)
 
             unless silent then @trigger('addchild', view: view)
 
@@ -87,6 +94,8 @@ define([
             @parent = parent
 
             unless silent then @trigger('setparent', parent: parent)
+
+            @parent.addChild(@)
 
         ###
         Parent and Child accessors.
@@ -134,6 +143,14 @@ define([
             super()
 
         ###
+        Replaces trigger with a version that calls itself and then calls on root
+        ###
+        # trigger: (events, args...) ->
+        #     args.unshift(events)
+        #     super.apply(@, args)
+        #     if propagate then @root().selfTrigger.apply(@root(), args, false)
+
+        ###
         Change state from one to another.
 
         First calls the transition method if it exists
@@ -146,10 +163,8 @@ define([
             # Transition
             tran = @calcTransition(@state, state)
 
-            if tran and _.isFunction(@[tran.func])
-                success = @[tran.func](@state, state, options)
-            else
-                success = true
+            if tran and _.isFunction(tran)
+                success = tran.call(@, @state, state, options)
 
             if success is false then return false
 
@@ -168,18 +183,19 @@ define([
             @trigger('changestate', pkg)
             @root().trigger(@namespace + '.changestate', pkg)
 
-
-
             # Bind new events
             @undelegateEvents()
             @delegateEvents(@calcEvents(state))
+
+            # Run any queued functions
+            @processFuncQueue(@funcQueue, @state)
 
             return true
 
         ###
         Sugar method for changeState
         ###
-        become: (state) -> @changeState(state)
+        become: (state, options) -> @changeState(state, options)
 
         ###
         Given a state from and to, figure out what transition applies.
@@ -200,31 +216,42 @@ define([
         ###
         calcTransition: (from, to) ->
             # Look for a specific transition first
-            transition = _.findWhere(@transitions, from: from, to: to)
-
-            matchState = (state, rule) ->
-                unless rule then return false # null, empty string
-                if state is rule then return true # 'loading' === 'loading'
-                if rule is '*' then return true # 'Staight wildcard'
-
-                # Starts with wildcard
-                if rule[0] is '*'
-                    excludes = rule.split('!').slice(1)
-
-                    return not _.contains(excludes, '' + state)
-
-                # No match
-                return false
-
-
+            transition = @transitions[from + ' ' + to]
 
             # Go through in order, looking for a wildcard transition to match.
             unless transition
-                transition = _.first(_.filter(@transitions, (t) ->
-                    return matchState(from, t.from) and matchState(to, t.to)
-                ))
+                key = _.chain(@transitions)
+                    .keys()
+                    .filter((t) =>
+                        s = t.split(' ')
+                        return @matchStateRule(from, s[0]) and
+                            @matchStateRule(to, s[1])
+                    )
+                    .first()
+                    .value()
 
-            return transition
+                transition = @transitions[key]
+
+            return @[transition]
+
+        ###
+        Matches a state with a state rule. Exact matches are true, * is true,
+        in the case of *!foo!bar anything except foo or bar matches. You can
+        have an unlimited number of exclusions.
+        ###
+        matchStateRule: (state, rule) ->
+            unless rule then return false # null, empty string
+            if state is rule then return true # 'loading' === 'loading'
+            if rule is '*' then return true # 'Staight wildcard'
+
+            # Starts with wildcard
+            if rule[0] is '*'
+                excludes = rule.split('!').slice(1)
+
+                return not _.contains(excludes, '' + state)
+
+            # No match
+            return false
 
         ###
         Creates a new events object, from this.events and this.`state`_events
@@ -238,8 +265,35 @@ define([
 
             return events
 
+        ###
+        Central point to add delayed functions to the function queue. Used when
+        we want a method to have to wait for a state to be, or not be, to run.
+        ###
+        addFuncToQueue: (func, args, rule) ->
+            @funcQueue.push(func: func, args: args, rule: rule)
 
-        mixin: (Class) ->
-            for key, value of Class
-                @::[key] = value
+        ###
+        Goes through each function in the function queue, matching its state
+        rule against the current state and runs it if appropriate. Running a
+        a function from the function queue will remove it from the queue.
+        ###
+        processFuncQueue: (queue, state) ->
+            i = 0
+            while i < queue.length
+                if @matchStateRule(state, queue[i].rule)
+                    fn = queue.splice(i, 1)[0]
+                    fn.func.apply(@, fn.args)
+                else
+                    i++
+
+        ###
+        Wraps a function to make it wait for a state before it executes. Does so
+        by adding it to a queue
+        ###
+        waitForState: (func, state) ->
+            return ->
+                if @matchStateRule(@state, state)
+                    return func.apply(@, arguments)
+
+                @addFuncToQueue(func, arguments, state)
 )
