@@ -2,6 +2,12 @@ define(['backbone'], (Backbone) ->
 
     class Collection extends Backbone.Collection
 
+        ###
+        Returns the model at the index immediately before the passed in model
+        instance. If the model instance is the first model in the collection, or
+        the model instance does not exist in the collection, this will return
+        null.
+        ###
         before: (model) ->
             index = @indexOf(model)
 
@@ -9,6 +15,12 @@ define(['backbone'], (Backbone) ->
 
             return @at(index - 1)
 
+        ###
+        Returns the model at the index immediately after the passed in model
+        instance. If the model instance is the last model in the collection, or
+        the model instance does not exist in the collection, this will return
+        null.
+        ###
         after: (model) ->
             index = @indexOf(model)
 
@@ -16,6 +28,10 @@ define(['backbone'], (Backbone) ->
 
             return @at(index + 1)
 
+        ###
+        Convenience function for getting an array of all the models in a
+        collection
+        ###
         all: -> @models.slice()
 
 )

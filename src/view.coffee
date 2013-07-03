@@ -134,6 +134,24 @@ define([
             return _.invoke(@children, funcName, args...)
 
         ###
+        Calls trigger on the root() object with the namespace added, and also on
+        itself without the namespace.
+        ###
+        trigger: (name, args...) ->
+            # Add name to args array
+            args.unshift(name)
+
+            # Trigger the local event
+            Backbone.View::trigger.apply(@, args.slice())
+
+            # Add namespace to the name in args array
+            args[0] = @namespace + '.' + name
+
+            # Trigger the root namespaced event
+            Backbone.View::trigger.apply(@root(), args.slice())
+
+
+        ###
         Calls remove on all child views before removing itself
         ###
         remove: ->
