@@ -234,10 +234,10 @@ define([
         ###
         calcTransition: (from, to) ->
             # Look for a specific transition first
-            transition = @transitions[from + ' ' + to]
+            transitions = @transitions[from + ' ' + to]
 
             # Go through in order, looking for a wildcard transition to match.
-            unless transition
+            unless transitions
                 key = _.chain(@transitions)
                     .keys()
                     .filter((t) =>
@@ -248,9 +248,18 @@ define([
                     .first()
                     .value()
 
-                transition = @transitions[key]
+                transitions = @transitions[key]
 
-            return @[transition]
+            # Allow functions, space separated strings pointing to functions on
+            # self, arrays of functions, and arrays of strings pointing to
+            # functions on self.
+            if _.isFunction(transitions) then return [transitions]
+            if _.isString(transitions)
+                return (@[t] for t in transitions.split(' '))
+            if _.isArray(transitions)
+                return _.map(transition, (t) ->
+                    return if _.isFunction(t) then t else @[t]
+                )
 
         ###
         Matches a state with a state rule. Exact matches are true, * is true,
