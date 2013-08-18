@@ -1,3 +1,6 @@
+**Bam is in a state of flux as I move to commonjs and npm, with an optional standalone script you can include in a page. Probably not a good idea to use it right now, I'll remove this notice once it's stable again. I know I shouldn't be doing this on master. Was a legitimate mistake, sorry.**
+
+
 Bam
 =====
 
