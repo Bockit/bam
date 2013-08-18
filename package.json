@@ -36,6 +36,6 @@
     "coffee-script": "~1.6.3"
   },
   "scripts": {
-    "prepublish": "coffee --compile --output lib/ src/"
+    "prepublish": "./bin/prepublish.sh"
   }
 }

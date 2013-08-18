@@ -2,7 +2,7 @@ Backbone = require('backbone')
 _ = require('underscore')
 $ = require('jquery-browserify')
 
-Decoratable = require('./decoratable.coffee')
+Decoratable = require('./decoratable.js')
 
 module.exports = View
 
