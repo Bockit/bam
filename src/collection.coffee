@@ -1,37 +1,37 @@
-define(['backbone'], (Backbone) ->
+Backbone = require('Backbone')
 
-    class Collection extends Backbone.Collection
+module.exports = Collection
 
-        ###
-        Returns the model at the index immediately before the passed in model
-        instance. If the model instance is the first model in the collection, or
-        the model instance does not exist in the collection, this will return
-        null.
-        ###
-        before: (model) ->
-            index = @indexOf(model)
+class Collection extends Backbone.Collection
 
-            if index is -1 or index is 0 then return null
+    ###
+    Returns the model at the index immediately before the passed in model
+    instance. If the model instance is the first model in the collection, or
+    the model instance does not exist in the collection, this will return
+    null.
+    ###
+    before: (model) ->
+        index = @indexOf(model)
 
-            return @at(index - 1)
+        if index is -1 or index is 0 then return null
 
-        ###
-        Returns the model at the index immediately after the passed in model
-        instance. If the model instance is the last model in the collection, or
-        the model instance does not exist in the collection, this will return
-        null.
-        ###
-        after: (model) ->
-            index = @indexOf(model)
+        return @at(index - 1)
 
-            if index is -1 or index is @length - 1 then return null
+    ###
+    Returns the model at the index immediately after the passed in model
+    instance. If the model instance is the last model in the collection, or
+    the model instance does not exist in the collection, this will return
+    null.
+    ###
+    after: (model) ->
+        index = @indexOf(model)
 
-            return @at(index + 1)
+        if index is -1 or index is @length - 1 then return null
 
-        ###
-        Convenience function for getting an array of all the models in a
-        collection
-        ###
-        all: -> @models.slice()
+        return @at(index + 1)
 
-)
+    ###
+    Convenience function for getting an array of all the models in a
+    collection
+    ###
+    all: -> @models.slice()

@@ -1,48 +1,51 @@
-define(->
-    class Decoratable
-        ###
-        Wraps methods in functions specified in the arguments. Takes the format:
+_ = require('underscore')
 
-            decorators:
-                'hello': 'world'
-                'foo': bar
-                'render': ['depends', 'idle']
-                'setup': [_.partial, 'stuff']
+module.exports = Decoratable
 
-        'hello': 'world' - Looks for method this.hello and wraps it in
-        this.world if this.world exists.
+class Decoratable
+    ###
+    Wraps methods in functions specified in the arguments. Takes the format:
 
-        'foo': bar - Wraps this.foo in function bar
+        {
+            'hello': 'world'
+            'foo': bar
+            'render': ['depends', 'idle']
+            'setup': [_.partial, 'stuff']
+        }
 
-        'render': ['depends', 'idle'] - Wraps method this.render in this.depends
-        and passes 'idle' to the wrapping function. Any arguments after the
-        first are passed into the wrapping function.
+    'hello': 'world' - Looks for method this.hello and wraps it in
+    this.world if this.world exists.
 
-        'setup': [_.partial, 'stuff'] - Wraps method this.setup in _.partial, and
-        passes 'stuff' to the wrapping function. Any arguments after the first
-        are passed into the wrapping function.
+    'foo': bar - Wraps this.foo in function bar
 
-        ###
-        decorateMethods: (decorators = {}) ->
-            for key, value of decorators
-                func = @[key]
-                args = []
+    'render': ['depends', 'idle'] - Wraps method this.render in this.depends
+    and passes 'idle' to the wrapping function. Any arguments after the
+    first are passed into the wrapping function.
 
-                if _.isString(value)
-                    decorator = @[value]
+    'setup': [_.partial, 'stuff'] - Wraps method this.setup in _.partial, and
+    passes 'stuff' to the wrapping function. Any arguments after the first
+    are passed into the wrapping function.
 
-                else if _.isFunction(value)
-                    decorator = value
+    ###
+    decorateMethods: (decorators = {}) ->
+        for key, value of decorators
+            func = @[key]
+            args = []
 
-                else if _.isArray(value)
+            if _.isString(value)
+                decorator = @[value]
 
-                    if _.isString(value[0])
-                        [name, args...] = value
-                        decorator = @[name]
+            else if _.isFunction(value)
+                decorator = value
 
-                    else if _.isFunction(value[0])
-                        [decorator, args...] = value
+            else if _.isArray(value)
 
-                args = [func].concat(args)
-                @[key] = decorator.apply(@, args)
-)
+                if _.isString(value[0])
+                    [name, args...] = value
+                    decorator = @[name]
+
+                else if _.isFunction(value[0])
+                    [decorator, args...] = value
+
+            args = [func].concat(args)
+            @[key] = decorator.apply(@, args)

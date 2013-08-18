@@ -1,0 +1,41 @@
+{
+  "name": "bam",
+  "version": "0.0.0",
+  "description": "Backbone with modifications. Adds heirarchy to Views, turns Views into Finite State Machines, adds a mixin for decorating methods and adds utility functions to Models and Collections.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Bockit/bam.git"
+  },
+  "keywords": [
+    "backbone",
+    "fsm",
+    "finite",
+    "state",
+    "machine",
+    "heirachy",
+    "heirachical",
+    "view",
+    "mvc",
+    "decorators"
+  ],
+  "author": "James Hiscock",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/Bockit/bam/issues"
+  },
+  "dependencies": {
+    "backbone": "~1.0.0",
+    "underscore": "~1.5.1",
+    "jquery-browserify": "~1.8.1"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.6.3"
+  },
+  "scripts": {
+    "prepublish": "coffee --compile --output lib/ src/"
+  }
+}

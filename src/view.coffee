@@ -1,326 +1,316 @@
-define([
-    'backbone'
-    'jquery'
-    'underscore'
+Backbone = require('backbone')
+_ = require('underscore')
+$ = require('jquery-browserify')
 
-    'cs!lib/bam/decoratable'
-], (
-    Backbone
-    $
-    _
+Decoratable = require('./decoratable.js')
 
-    Decoratable
-) ->
+class View extends Backbone.View
 
-    class View extends Backbone.View
+    ###
+    Inline functionality to mixin classes
 
-        ###
-        Inline functionality to mixin classes
+    `@::mixin(ClassName)` is how you do it.
+    ###
+    mixin: (Class) ->
+        for key, value of Class::
+            @[key] = value
 
-        `@::mixin(ClassName)` is how you do it.
-        ###
-        mixin: (Class) ->
-            for key, value of Class::
-                @[key] = value
+    @::mixin(Decoratable)
 
-        @::mixin(Decoratable)
+    # Parent View
+    parent: null
 
+    # Child views, is initialised as an array
+    children: null
 
-        # Parent View
-        parent: null
+    # The prefix to use for root view state change events
+    namespace: ''
 
-        # Child views, is initialised as an array
-        children: null
+    # The initial state to change to after construction
+    initialState: null
 
-        # The prefix to use for root view state change events
-        namespace: ''
+    # The current state of the view
+    state: null
 
-        # The initial state to change to after construction
-        initialState: null
+    # The previous state of the view
+    priorState: null
 
-        # The current state of the view
-        state: null
+    ###
+    Ensure the classname is applied, then set the parent and children if any
+    are passed in. Does the normal backbone constructor and then does the
+    first state change.
+    ###
+    constructor: (options) ->
+        @children = []
+        @funcQueue = []
 
-        # The previous state of the view
-        priorState: null
+        @decorateMethods(@decorators)
 
-        ###
-        Ensure the classname is applied, then set the parent and children if any
-        are passed in. Does the normal backbone constructor and then does the
-        first state change.
-        ###
-        constructor: (options) ->
-            @children = []
-            @funcQueue = []
+        if options.el then @ensureClass(options.el, options.className)
+        if options.parent then @setParent(options.parent)
+        if options.children?.length then @addChildren()
 
-            @decorateMethods(@decorators)
+        super(options)
 
-            if options.el then @ensureClass(options.el, options.className)
-            if options.parent then @setParent(options.parent)
-            if options.children?.length then @addChildren()
+        @initialState = options.initialState ? @initialState
+        @changeState(@initialState)
 
-            super(options)
+    ###
+    Used to ensure that the className property of the view is applied to an
+    el passed in as an option.
+    ###
+    ensureClass: (el, className=@className) ->
+        $(el).addClass(className)
 
-            @initialState = options.initialState ? @initialState
-            @changeState(@initialState)
+    ###
+    Adds a list of views as children of this view.
+    ###
+    addChildren: (views, silent=false) ->
+        _.each(views, (view) => @addChild(view, silent))
 
-        ###
-        Used to ensure that the className property of the view is applied to an
-        el passed in as an option.
-        ###
-        ensureClass: (el, className=@className) ->
-            $(el).addClass(className)
+    ###
+    Adds a view as a child of this view.
+    ###
+    addChild: (view, silent=false) ->
+        @children.push(view)
 
-        ###
-        Adds a list of views as children of this view.
-        ###
-        addChildren: (views, silent=false) ->
-            _.each(views, (view) => @addChild(view, silent))
+        unless silent then @trigger('addchild', view: view)
 
-        ###
-        Adds a view as a child of this view.
-        ###
-        addChild: (view, silent=false) ->
-            @children.push(view)
+    ###
+    Sets the parent element of the view.
 
-            unless silent then @trigger('addchild', view: view)
+    Not sure if this will be useful but why not?
+    ###
+    setParent: (parent, silent=false) ->
+        @parent = parent
 
-        ###
-        Sets the parent element of the view.
+        unless silent then @trigger('setparent', parent: parent)
 
-        Not sure if this will be useful but why not?
-        ###
-        setParent: (parent, silent=false) ->
-            @parent = parent
+        @parent.addChild(@)
 
-            unless silent then @trigger('setparent', parent: parent)
+    ###
+    Parent and Child accessors.
+    ###
+    hasParent: -> !!@parent
+    getParent: -> @parent
+    hasChildren: -> @children.length
+    getChildren: -> @children
+    removeChild: (child) -> @children = _.without(@children, child)
+    removeChildren: (children) ->
+        @children = _.difference(@children, children)
 
-            @parent.addChild(@)
+    ###
+    Gets the root view for a particular view. Can be itself.
+    ###
+    root: ->
+        root = @
+        root = root.getParent() while root.hasParent()
 
-        ###
-        Parent and Child accessors.
-        ###
-        hasParent: -> !!@parent
-        getParent: -> @parent
-        hasChildren: -> @children.length
-        getChildren: -> @children
-        removeChild: (child) -> @children = _.without(@children, child)
-        removeChildren: (children) ->
-            @children = _.difference(@children, children)
+        return root
 
-        ###
-        Gets the root view for a particular view. Can be itself.
-        ###
-        root: ->
-            root = @
-            root = root.getParent() while root.hasParent()
+    ###
+    Iterates over each child view
+    ###
+    eachChild: (func) -> _.each(@children, func)
 
-            return root
+    ###
+    Performs a map on all the child views
+    ###
+    mapChildren: (func) -> _.map(@children, func)
 
-        ###
-        Iterates over each child view
-        ###
-        eachChild: (func) -> _.each(@children, func)
+    ###
+    Invokes the function 'funcName' on all child views.
+    ###
+    invokeChildren: (funcName, args...) ->
+        return _.invoke(@children, funcName, args...)
 
-        ###
-        Performs a map on all the child views
-        ###
-        mapChildren: (func) -> _.map(@children, func)
+    ###
+    Calls trigger on the root() object with the namespace added, and also on
+    itself without the namespace.
+    ###
+    trigger: (name, args...) ->
+        # Add name to args array
+        args.unshift(name)
 
-        ###
-        Invokes the function 'funcName' on all child views.
-        ###
-        invokeChildren: (funcName, args...) ->
-            return _.invoke(@children, funcName, args...)
+        # Trigger the local event
+        Backbone.View::trigger.apply(@, args.slice())
 
-        ###
-        Calls trigger on the root() object with the namespace added, and also on
-        itself without the namespace.
-        ###
-        trigger: (name, args...) ->
-            # Add name to args array
-            args.unshift(name)
+        # Add namespace to the name in args array
+        args[0] = @namespace + '.' + name
 
-            # Trigger the local event
-            Backbone.View::trigger.apply(@, args.slice())
-
-            # Add namespace to the name in args array
-            args[0] = @namespace + '.' + name
-
-            # Trigger the root namespaced event
-            Backbone.View::trigger.apply(@root(), args.slice())
+        # Trigger the root namespaced event
+        Backbone.View::trigger.apply(@root(), args.slice())
 
 
-        ###
-        Calls remove on all child views before removing itself
-        ###
-        remove: ->
-            @invoke('remove')
-            @children = []
-            @parent = null
-            super()
+    ###
+    Calls remove on all child views before removing itself
+    ###
+    remove: ->
+        @invoke('remove')
+        @children = []
+        @parent = null
+        super()
 
-        ###
-        Replaces trigger with a version that calls itself and then calls on root
-        ###
-        # trigger: (events, args...) ->
-        #     args.unshift(events)
-        #     super.apply(@, args)
-        #     if propagate then @root().selfTrigger.apply(@root(), args, false)
+    ###
+    Replaces trigger with a version that calls itself and then calls on root
+    ###
+    # trigger: (events, args...) ->
+    #     args.unshift(events)
+    #     super.apply(@, args)
+    #     if propagate then @root().selfTrigger.apply(@root(), args, false)
 
-        ###
-        Change state from one to another.
+    ###
+    Change state from one to another.
 
-        First calls the transition method if it exists
-        Fires the transition event
+    First calls the transition method if it exists
+    Fires the transition event
 
-        Then changes the state, calling the state action method if it exists
-        Fires the changestate event
-        ###
-        changeState: (state, options) ->
-            # Transition
-            tran = @calcTransition(@state, state)
+    Then changes the state, calling the state action method if it exists
+    Fires the changestate event
+    ###
+    changeState: (state, options) ->
+        # Transition
+        tran = @calcTransition(@state, state)
 
-            if tran and _.isFunction(tran)
-                success = tran.call(@, @state, state, options)
+        if tran and _.isFunction(tran)
+            success = tran.call(@, @state, state, options)
 
-            if success is false then return false
+        if success is false then return false
 
-            pkg = from: @state, to: state, options: options
-            @trigger('transition', pkg)
-            @root().trigger(@namespace + '.transition', pkg)
+        pkg = from: @state, to: state, options: options
+        @trigger('transition', pkg)
+        @root().trigger(@namespace + '.transition', pkg)
 
 
-            # Change state
-            @priorState = @state
-            @state = state
+        # Change state
+        @priorState = @state
+        @state = state
 
-            if _.isFunction(@[@states[state]]) then @[@states[state]](options)
+        if _.isFunction(@[@states[state]]) then @[@states[state]](options)
 
-            pkg = state: @state, options: options
-            @trigger('changestate', pkg)
-            @root().trigger(@namespace + '.changestate', pkg)
+        pkg = state: @state, options: options
+        @trigger('changestate', pkg)
+        @root().trigger(@namespace + '.changestate', pkg)
 
-            # Bind new events
-            @undelegateEvents()
-            @delegateEvents(@calcEvents(state))
+        # Bind new events
+        @undelegateEvents()
+        @delegateEvents(@calcEvents(state))
 
-            # Run any queued functions
-            @processFuncQueue(@funcQueue, @state)
+        # Run any queued functions
+        @processFuncQueue(@funcQueue, @state)
 
-            return true
+        return true
 
-        ###
-        Sugar method for changeState
-        ###
-        become: (state, options) -> @changeState(state, options)
+    ###
+    Sugar method for changeState
+    ###
+    become: (state, options) -> @changeState(state, options)
 
-        ###
-        Given a state from and to, figure out what transition applies.
+    ###
+    Given a state from and to, figure out what transition applies.
 
-        First we look for a direct match transition, i.e.:
+    First we look for a direct match transition, i.e.:
 
-            from 'loading', to 'idle'
+        from 'loading', to 'idle'
 
-        If we don't get a match on that, we'll step through the list of
-        transitions in order, looking for the first transition that matches.
+    If we don't get a match on that, we'll step through the list of
+    transitions in order, looking for the first transition that matches.
 
-        '*' matches any state including null for initial state change.
+    '*' matches any state including null for initial state change.
 
-        '*!idle' will match anything, except idle. Exceptions can be chained
-        like so: '*!idle!errored'. If you want to exclude a null state, you can
-        still do '*!null' as Bam coerces states to strings before comparing them
-        to wildcard exclusions.
-        ###
-        calcTransition: (from, to) ->
-            # Look for a specific transition first
-            transitions = @transitions[from + ' ' + to]
+    '*!idle' will match anything, except idle. Exceptions can be chained
+    like so: '*!idle!errored'. If you want to exclude a null state, you can
+    still do '*!null' as Bam coerces states to strings before comparing them
+    to wildcard exclusions.
+    ###
+    calcTransition: (from, to) ->
+        # Look for a specific transition first
+        transitions = @transitions[from + ' ' + to]
 
-            # Go through in order, looking for a wildcard transition to match.
-            unless transitions
-                key = _.chain(@transitions)
-                    .keys()
-                    .filter((t) =>
-                        s = t.split(' ')
-                        return @matchStateRule(from, s[0]) and
-                            @matchStateRule(to, s[1])
-                    )
-                    .first()
-                    .value()
-
-                transitions = @transitions[key]
-
-            # Allow functions, space separated strings pointing to functions on
-            # self, arrays of functions, and arrays of strings pointing to
-            # functions on self.
-            if _.isFunction(transitions) then return [transitions]
-            if _.isString(transitions)
-                return (@[t] for t in transitions.split(' '))
-            if _.isArray(transitions)
-                return _.map(transition, (t) ->
-                    return if _.isFunction(t) then t else @[t]
+        # Go through in order, looking for a wildcard transition to match.
+        unless transitions
+            key = _.chain(@transitions)
+                .keys()
+                .filter((t) =>
+                    s = t.split(' ')
+                    return @matchStateRule(from, s[0]) and
+                        @matchStateRule(to, s[1])
                 )
+                .first()
+                .value()
 
-        ###
-        Matches a state with a state rule. Exact matches are true, * is true,
-        in the case of *!foo!bar anything except foo or bar matches. You can
-        have an unlimited number of exclusions.
-        ###
-        matchStateRule: (state, rule) ->
-            unless rule then return false # null, empty string
-            if state is rule then return true # 'loading' === 'loading'
-            if rule is '*' then return true # 'Staight wildcard'
+            transitions = @transitions[key]
 
-            # Starts with wildcard
-            if rule[0] is '*'
-                excludes = rule.split('!').slice(1)
+        # Allow functions, space separated strings pointing to functions on
+        # self, arrays of functions, and arrays of strings pointing to
+        # functions on self.
+        if _.isFunction(transitions) then return [transitions]
+        if _.isString(transitions)
+            return (@[t] for t in transitions.split(' '))
+        if _.isArray(transitions)
+            return _.map(transition, (t) ->
+                return if _.isFunction(t) then t else @[t]
+            )
 
-                return not _.contains(excludes, '' + state)
+    ###
+    Matches a state with a state rule. Exact matches are true, * is true,
+    in the case of *!foo!bar anything except foo or bar matches. You can
+    have an unlimited number of exclusions.
+    ###
+    matchStateRule: (state, rule) ->
+        unless rule then return false # null, empty string
+        if state is rule then return true # 'loading' === 'loading'
+        if rule is '*' then return true # 'Staight wildcard'
 
-            # No match
-            return false
+        # Starts with wildcard
+        if rule[0] is '*'
+            excludes = rule.split('!').slice(1)
 
-        ###
-        Creates a new events object, from this.events and this.`state`_events
-        ###
-        calcEvents: (state) ->
-            events = {}
-            if @events then events = _.extend(events, @events)
-            unless state is null
-                if @[state + '_events']
-                    events = _.extend(events, @[state + '_events'])
+            return not _.contains(excludes, '' + state)
 
-            return events
+        # No match
+        return false
 
-        ###
-        Central point to add delayed functions to the function queue. Used when
-        we want a method to have to wait for a state to be, or not be, to run.
-        ###
-        addFuncToQueue: (func, args, rule) ->
-            @funcQueue.push(func: func, args: args, rule: rule)
+    ###
+    Creates a new events object, from this.events and this.`state`_events
+    ###
+    calcEvents: (state) ->
+        events = {}
+        if @events then events = _.extend(events, @events)
+        unless state is null
+            if @[state + '_events']
+                events = _.extend(events, @[state + '_events'])
 
-        ###
-        Goes through each function in the function queue, matching its state
-        rule against the current state and runs it if appropriate. Running a
-        a function from the function queue will remove it from the queue.
-        ###
-        processFuncQueue: (queue, state) ->
-            i = 0
-            while i < queue.length
-                if @matchStateRule(state, queue[i].rule)
-                    fn = queue.splice(i, 1)[0]
-                    fn.func.apply(@, fn.args)
-                else
-                    i++
+        return events
 
-        ###
-        Wraps a function to make it wait for a state before it executes. Does so
-        by adding it to a queue
-        ###
-        waitForState: (func, state) ->
-            return ->
-                if @matchStateRule(@state, state)
-                    return func.apply(@, arguments)
+    ###
+    Central point to add delayed functions to the function queue. Used when
+    we want a method to have to wait for a state to be, or not be, to run.
+    ###
+    addFuncToQueue: (func, args, rule) ->
+        @funcQueue.push(func: func, args: args, rule: rule)
 
-                @addFuncToQueue(func, arguments, state)
-)
+    ###
+    Goes through each function in the function queue, matching its state
+    rule against the current state and runs it if appropriate. Running a
+    a function from the function queue will remove it from the queue.
+    ###
+    processFuncQueue: (queue, state) ->
+        i = 0
+        while i < queue.length
+            if @matchStateRule(state, queue[i].rule)
+                fn = queue.splice(i, 1)[0]
+                fn.func.apply(@, fn.args)
+            else
+                i++
+
+    ###
+    Wraps a function to make it wait for a state before it executes. Does so
+    by adding it to a queue
+    ###
+    waitForState: (func, state) ->
+        return ->
+            if @matchStateRule(@state, state)
+                return func.apply(@, arguments)
+
+            @addFuncToQueue(func, arguments, state)
