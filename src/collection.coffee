@@ -1,8 +1,20 @@
-Backbone = require('Backbone')
+Backbone = require('backbone')
+Decoratable = require('./decoratable.js')
 
 module.exports = Collection
 
 class Collection extends Backbone.Collection
+
+    ###
+    Inline functionality to mixin classes
+
+    `@::mixin(ClassName)` is how you do it.
+    ###
+    mixin: (Class) ->
+        for key, value of Class::
+            @[key] = value
+
+    @::mixin(Decoratable)
 
     ###
     Returns the model at the index immediately before the passed in model
@@ -12,9 +24,7 @@ class Collection extends Backbone.Collection
     ###
     before: (model) ->
         index = @indexOf(model)
-
         if index is -1 or index is 0 then return null
-
         return @at(index - 1)
 
     ###
@@ -25,9 +35,7 @@ class Collection extends Backbone.Collection
     ###
     after: (model) ->
         index = @indexOf(model)
-
         if index is -1 or index is @length - 1 then return null
-
         return @at(index + 1)
 
     ###

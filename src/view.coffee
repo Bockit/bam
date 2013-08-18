@@ -2,7 +2,9 @@ Backbone = require('backbone')
 _ = require('underscore')
 $ = require('jquery-browserify')
 
-Decoratable = require('./decoratable.js')
+Decoratable = require('./decoratable.coffee')
+
+module.exports = View
 
 class View extends Backbone.View
 
@@ -170,10 +172,14 @@ class View extends Backbone.View
     ###
     changeState: (state, options) ->
         # Transition
-        tran = @calcTransition(@state, state)
+        trans = @calcTransition(@state, state)
 
-        if tran and _.isFunction(tran)
-            success = tran.call(@, @state, state, options)
+        if trans
+            success = _.all(_.map(trans, (t) =>
+                t.call(@, @state, state, options)))
+            # for t in trans
+            #     result = t.call(@, @state, state, options)
+            # unless result
 
         if success is false then return false
 
@@ -288,7 +294,7 @@ class View extends Backbone.View
     we want a method to have to wait for a state to be, or not be, to run.
     ###
     addFuncToQueue: (func, args, rule) ->
-        @funcQueue.push(func: func, args: args, rule: rule)
+        return @funcQueue.push(func: func, args: args, rule: rule)
 
     ###
     Goes through each function in the function queue, matching its state
@@ -314,3 +320,24 @@ class View extends Backbone.View
                 return func.apply(@, arguments)
 
             @addFuncToQueue(func, arguments, state)
+
+    ###
+    Waits for a state by adding to the funcQueue, but it will remove any
+    previously queued versions of the decorated function. This means it will
+    only execute the last queued decorated function call when the state rule
+    becomes matched. If it is matched already, then it'll just execute
+    immediately.
+    ###
+    waitForStateDoOnce: (func, state) ->
+        queued = null
+        return ->
+            if @matchStateRule(@state, state)
+                return func.apply(@, arguments)
+
+            if queued isnt null then Array.remove(@funcQueue, queued)
+
+            wrapped = ->
+                queued = null
+                func.apply(@, arguments)
+
+            queued = @addFuncToQueue(wrapped, arguments, state) - 1
