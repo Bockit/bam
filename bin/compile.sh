@@ -1,1 +1,1 @@
-./node_modules/.bin/coffee --compile --output lib/ src/
+./node_modules/.bin/coffee --compile --output lib/ src

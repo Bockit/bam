@@ -1,7 +1,5 @@
 _ = require('underscore')
 
-module.exports = Decoratable
-
 class Decoratable
     ###
     Wraps methods in functions specified in the arguments. Takes the format:
@@ -49,3 +47,5 @@ class Decoratable
 
             args = [func].concat(args)
             @[key] = decorator.apply(@, args)
+
+module.exports = Decoratable

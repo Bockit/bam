@@ -4,8 +4,6 @@ $ = require('jquery-browserify')
 
 Decoratable = require('./decoratable.js')
 
-module.exports = View
-
 class View extends Backbone.View
 
     ###
@@ -341,3 +339,5 @@ class View extends Backbone.View
                 func.apply(@, arguments)
 
             queued = @addFuncToQueue(wrapped, arguments, state) - 1
+
+module.exports = View

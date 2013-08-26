@@ -4,8 +4,6 @@ $ = require('jquery-browserify')
 
 Decoratable = require('./decoratable.js')
 
-module.exports = Model
-
 class Model extends Backbone.Model
 
     ###
@@ -30,3 +28,5 @@ class Model extends Backbone.Model
     collection this will return null.
     ###
     prev: -> @collection?.before(@)
+
+module.exports = Model

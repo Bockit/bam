@@ -1,1 +1,0 @@
-./node_modules/.bin/browserify lib/index.js --outfile build/bam.js --standalone Bam --ignore backbone --ignore underscore --ignore jquery-browserify

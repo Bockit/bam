@@ -1,8 +1,6 @@
 Backbone = require('backbone')
 Decoratable = require('./decoratable.js')
 
-module.exports = Collection
-
 class Collection extends Backbone.Collection
 
     ###
@@ -43,3 +41,5 @@ class Collection extends Backbone.Collection
     collection
     ###
     all: -> @models.slice()
+
+module.exports = Collection
