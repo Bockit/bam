@@ -1,6 +1,5 @@
 Backbone = require('backbone')
 _ = require('underscore')
-$ = require('jquery-browserify')
 
 Decoratable = require('./decoratable.js')
 
@@ -41,7 +40,9 @@ class Model extends Backbone.Model
             attrs[key] = val
 
         if @types
-            attrs[key] = @cast(val, @types[key]) for key, val of attrs
+            for key, val of attrs
+                unless _.isUndefined(@types[key])
+                    attrs[key] = @cast(val, @types[key])
 
         return super(attrs, options)
 
@@ -63,9 +64,10 @@ class Model extends Backbone.Model
         if _.isFunction(cast) then return cast
 
         return switch cast
-            when 'string' then (v) -> '' + v
-            when 'integer' then (v) -> Math.floor(+v)
-            when 'float' then (v) -> +v
-            when 'boolean' then (v) -> !!v
+            when 'string' then ((v) -> if v is null then null else v + '')
+            when 'int' then ((v) -> if v is null then null else Math.floor(+v))
+            when 'float' then ((v) -> if v is null then null else +v)
+            when 'boolean' then ((v) -> if v is null then null else !!v)
+            else (v) -> v
 
 module.exports = Model
