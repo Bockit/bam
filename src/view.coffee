@@ -183,6 +183,8 @@ class View extends Backbone.View
 
         pkg = from: @state, to: state, options: options
         @trigger('transition', pkg)
+        @root().trigger(@namespace + '.transition', pkg)
+
 
         # Change state
         @priorState = @state
@@ -192,6 +194,7 @@ class View extends Backbone.View
 
         pkg = state: @state, options: options
         @trigger('changestate', pkg)
+        @root().trigger(@namespace + '.changestate', pkg)
 
         # Bind new events
         @undelegateEvents()
@@ -227,6 +230,7 @@ class View extends Backbone.View
     calcTransition: (from, to) ->
         # Look for a specific transition first
         transitions = @transitions[from + ' ' + to]
+
         # Go through in order, looking for a wildcard transition to match.
         unless transitions
             key = _.chain(@transitions)
@@ -258,7 +262,7 @@ class View extends Backbone.View
     have an unlimited number of exclusions.
     ###
     matchStateRule: (state, rule) ->
-        if state is null then state = 'null'
+        unless rule then return false # null, empty string
         if state is rule then return true # 'loading' === 'loading'
         if rule is '*' then return true # 'Staight wildcard'
 
