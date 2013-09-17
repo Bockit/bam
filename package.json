@@ -1,6 +1,6 @@
 {
   "name": "bamjs",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Backbone with modifications. Adds heirarchy to Views, turns Views into Finite State Machines, adds a mixin for decorating methods and adds utility functions to Models and Collections.",
   "main": "lib/index.js",
   "scripts": {
