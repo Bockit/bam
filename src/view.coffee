@@ -228,7 +228,7 @@ class View extends Backbone.View
         # Look for a specific transition first
         transitions = @transitions?[from + ' ' + to]
         # Go through in order, looking for a wildcard transition to match.
-        unless transitions and transitions isnt null
+        unless transitions and @transitions
             key = _.chain(@transitions)
                 .keys()
                 .filter((t) =>
