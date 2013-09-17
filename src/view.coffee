@@ -188,7 +188,7 @@ class View extends Backbone.View
         @priorState = @state
         @state = state
 
-        if _.isFunction(@[@states[state]]) then @[@states[state]](options)
+        if _.isFunction(@[@states?[state]]) then @[@states[state]](options)
 
         pkg = state: @state, options: options
         @trigger('changestate', pkg)
@@ -226,7 +226,7 @@ class View extends Backbone.View
     ###
     calcTransition: (from, to) ->
         # Look for a specific transition first
-        transitions = @transitions[from + ' ' + to]
+        transitions = @transitions?[from + ' ' + to]
         # Go through in order, looking for a wildcard transition to match.
         unless transitions
             key = _.chain(@transitions)
@@ -239,7 +239,7 @@ class View extends Backbone.View
                 .first()
                 .value()
 
-            transitions = @transitions[key]
+            transitions = @transitions?[key]
 
         # Allow functions, space separated strings pointing to functions on
         # self, arrays of functions, and arrays of strings pointing to
