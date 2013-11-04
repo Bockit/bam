@@ -146,7 +146,7 @@ class View extends Backbone.View
     Calls remove on all child views before removing itself
     ###
     remove: ->
-        @invoke('remove')
+        @invokeChildren('remove')
         @children = []
         @parent = null
         super()
