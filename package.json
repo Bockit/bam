@@ -2,7 +2,7 @@
   "name": "bamjs",
   "version": "0.6.7",
   "description": "Backbone with modifications. Adds heirarchy to Views, turns Views into Finite State Machines, adds a mixin for decorating methods and adds utility functions to Models and Collections.",
-  "main": "index.coffee",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/Bockit/bam.git"
