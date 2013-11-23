@@ -1,6 +1,5 @@
 Backbone = require('backbone')
 _ = require('underscore')
-$ = require('jquery-browserify')
 
 Decoratable = require('./decoratable.js')
 
@@ -60,7 +59,10 @@ class View extends Backbone.View
     el passed in as an option.
     ###
     ensureClass: (el, className=@className) ->
-        $(el).addClass(className)
+        wanted = className?.split(/\s+/) ? []
+        existing = el.className.split(/\s+/)
+
+        el.className = _.uniq(existing.concat(wanted)).join(' ')
 
     ###
     Adds a list of views as children of this view.
