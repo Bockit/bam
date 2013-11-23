@@ -2,13 +2,13 @@
   "name": "bamjs",
   "version": "0.6.7",
   "description": "Backbone with modifications. Adds heirarchy to Views, turns Views into Finite State Machines, adds a mixin for decorating methods and adds utility functions to Models and Collections.",
-  "main": "lib/index.js",
-  "scripts": {
-    "prepublish": "./bin/prepublish.sh"
-  },
+  "main": "index.coffee",
   "repository": {
     "type": "git",
     "url": "git://github.com/Bockit/bam.git"
+  },
+  "scripts": {
+    "prepublish": "coffee -o . -c src"
   },
   "keywords": [
     "backbone",
@@ -33,7 +33,7 @@
     "jquery-browserify": "~1.8.1"
   },
   "devDependencies": {
-    "coffee-script": "~1.6.3",
-    "browserify": "~2.27.1"
+    "browserify": "~2.27.1",
+    "coffee-script": "~1.6.3"
   }
 }

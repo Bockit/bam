@@ -1,9 +1,6 @@
-###
-Convenience entry point if someone just wants to `require('bam')`
-###
-
 module.exports =
-    Collection: require('./collection.js')
-    Model: require('./model.js')
-    View: require('./view.js')
-    Decoratable: require('./decoratable.js')
+    Backbone: require('backbone')
+    Collection: require('./collection')
+    Model: require('./model')
+    View: require('./view')
+    Decoratable: require('./decoratable')

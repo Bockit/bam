@@ -232,7 +232,7 @@
 
 
     View.prototype.remove = function() {
-      this.invoke('remove');
+      this.invokeChildren('remove');
       this.children = [];
       this.parent = null;
       return View.__super__.remove.call(this);
@@ -317,27 +317,30 @@
 
 
     View.prototype.calcTransition = function(from, to) {
-      var key, t, transitions, _ref, _ref1,
+      var key, t, transitions,
         _this = this;
-      transitions = (_ref = this.transitions) != null ? _ref[from + ' ' + to] : void 0;
-      if (!(transitions && this.transitions)) {
+      if (!this.transitions) {
+        return null;
+      }
+      transitions = this.transitions[from + ' ' + to];
+      if (!transitions) {
         key = _.chain(this.transitions).keys().filter(function(t) {
           var s;
           s = t.split(' ');
           return _this.matchStateRule(from, s[0]) && _this.matchStateRule(to, s[1]);
         }).first().value();
-        transitions = (_ref1 = this.transitions) != null ? _ref1[key] : void 0;
+        transitions = this.transitions[key];
       }
       if (_.isFunction(transitions)) {
         return [transitions];
       }
       if (_.isString(transitions)) {
         return (function() {
-          var _i, _len, _ref2, _results;
-          _ref2 = transitions.split(' ');
+          var _i, _len, _ref, _results;
+          _ref = transitions.split(' ');
           _results = [];
-          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-            t = _ref2[_i];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            t = _ref[_i];
             _results.push(this[t]);
           }
           return _results;

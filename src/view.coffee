@@ -175,9 +175,6 @@ class View extends Backbone.View
         if trans
             success = _.all(_.map(trans, (t) =>
                 t.call(@, @state, state, options)))
-            # for t in trans
-            #     result = t.call(@, @state, state, options)
-            # unless result
 
         if success is false then return false
 
@@ -225,10 +222,11 @@ class View extends Backbone.View
     to wildcard exclusions.
     ###
     calcTransition: (from, to) ->
+        unless @transitions then return null
         # Look for a specific transition first
-        transitions = @transitions?[from + ' ' + to]
+        transitions = @transitions[from + ' ' + to]
         # Go through in order, looking for a wildcard transition to match.
-        unless transitions and @transitions
+        unless transitions
             key = _.chain(@transitions)
                 .keys()
                 .filter((t) =>
@@ -239,7 +237,7 @@ class View extends Backbone.View
                 .first()
                 .value()
 
-            transitions = @transitions?[key]
+            transitions = @transitions[key]
 
         # Allow functions, space separated strings pointing to functions on
         # self, arrays of functions, and arrays of strings pointing to
