@@ -260,7 +260,7 @@
       trans = this.calcTransition(this.state, state);
       if (trans) {
         success = _.all(_.map(trans, function(t) {
-          return t.call(_this, _this.state, state, options);
+          return (t != null ? t.call(_this, _this.state, state, options) : void 0) !== false;
         }));
       }
       if (success === false) {

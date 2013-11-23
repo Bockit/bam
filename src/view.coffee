@@ -174,7 +174,8 @@ class View extends Backbone.View
 
         if trans
             success = _.all(_.map(trans, (t) =>
-                t.call(@, @state, state, options)))
+                return t?.call(@, @state, state, options) isnt false
+            ))
 
         if success is false then return false
 
