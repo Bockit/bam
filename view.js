@@ -83,6 +83,9 @@
       if (className == null) {
         className = this.className;
       }
+      if (!className) {
+        return;
+      }
       wanted = (_ref = className != null ? className.split(/\s+/) : void 0) != null ? _ref : [];
       existing = el.className.split(/\s+/);
       return el.className = _.uniq(existing.concat(wanted)).join(' ');
@@ -283,6 +286,7 @@
         options: options
       };
       this.trigger('changestate', pkg);
+      this.trigger('changestate.' + state, pkg);
       this.undelegateEvents();
       this.delegateEvents(this.calcEvents(state));
       this.processFuncQueue(this.funcQueue, this.state);

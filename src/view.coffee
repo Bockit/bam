@@ -59,6 +59,7 @@ class View extends Backbone.View
     el passed in as an option.
     ###
     ensureClass: (el, className=@className) ->
+        if not className then return
         wanted = className?.split(/\s+/) ? []
         existing = el.className.split(/\s+/)
 
@@ -192,6 +193,7 @@ class View extends Backbone.View
 
         pkg = state: @state, options: options
         @trigger('changestate', pkg)
+        @trigger('changestate.' + state, pkg)
 
         # Bind new events
         @undelegateEvents()
