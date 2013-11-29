@@ -182,7 +182,7 @@ class View extends Backbone.View
 
         if success is false then return false
 
-        pkg = from: @state, to: state, options: options
+        pkg = from: @state, to: state, options: options, view: @
         @trigger('transition', pkg)
 
         # Change state
@@ -191,7 +191,7 @@ class View extends Backbone.View
 
         if _.isFunction(@[@states?[state]]) then @[@states[state]](options)
 
-        pkg = state: @state, options: options
+        pkg = state: @state, options: options, view: @
         @trigger('changestate', pkg)
         @trigger('changestate.' + state, pkg)
 

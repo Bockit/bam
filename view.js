@@ -273,7 +273,8 @@
       pkg = {
         from: this.state,
         to: state,
-        options: options
+        options: options,
+        view: this
       };
       this.trigger('transition', pkg);
       this.priorState = this.state;
@@ -283,7 +284,8 @@
       }
       pkg = {
         state: this.state,
-        options: options
+        options: options,
+        view: this
       };
       this.trigger('changestate', pkg);
       this.trigger('changestate.' + state, pkg);
