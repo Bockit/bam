@@ -155,14 +155,6 @@ class View extends Backbone.View
         super()
 
     ###
-    Replaces trigger with a version that calls itself and then calls on root
-    ###
-    # trigger: (events, args...) ->
-    #     args.unshift(events)
-    #     super.apply(@, args)
-    #     if propagate then @root().selfTrigger.apply(@root(), args, false)
-
-    ###
     Change state from one to another.
 
     First calls the transition method if it exists
@@ -331,7 +323,7 @@ class View extends Backbone.View
             if @matchStateRule(@state, state)
                 return func.apply(@, arguments)
 
-            if queued isnt null then Array.remove(@funcQueue, queued)
+            if queued isnt null then @funcQueue = _.without(@funcQueue, queued)
 
             wrapped = ->
                 queued = null

@@ -243,11 +243,6 @@
     };
 
     /*
-    Replaces trigger with a version that calls itself and then calls on root
-    */
-
-
-    /*
     Change state from one to another.
     
     First calls the transition method if it exists
@@ -477,7 +472,7 @@
           return func.apply(this, arguments);
         }
         if (queued !== null) {
-          Array.remove(this.funcQueue, queued);
+          this.funcQueue = _.without(this.funcQueue, queued);
         }
         wrapped = function() {
           queued = null;
