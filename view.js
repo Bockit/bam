@@ -79,16 +79,25 @@
 
 
     View.prototype.ensureClass = function(el, className) {
-      var existing, wanted, _ref;
+      var existing, wanted, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;
       if (className == null) {
         className = this.className;
+      }
+      if (el.jQuery) {
+        return el.addClass(className);
       }
       if (!className) {
         return;
       }
       wanted = (_ref = className != null ? className.split(/\s+/) : void 0) != null ? _ref : [];
-      existing = el.className.split(/\s+/);
-      return el.className = _.uniq(existing.concat(wanted)).join(' ');
+      switch (typeof el.className) {
+        case 'string':
+          existing = (_ref1 = (_ref2 = el.className) != null ? _ref2.split(/\s+/) : void 0) != null ? _ref1 : [];
+          return el.className = _.uniq(existing.concat(wanted)).join(' ');
+        case 'object':
+          existing = (_ref3 = (_ref4 = el.className) != null ? (_ref5 = _ref4.baseVal) != null ? _ref5.split(/\s+/) : void 0 : void 0) != null ? _ref3 : [];
+          return (_ref6 = el.className) != null ? _ref6.baseVal = _.uniq(existing.concat(wanted)).join(' ') : void 0;
+      }
     };
 
     /*
