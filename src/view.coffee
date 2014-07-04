@@ -59,11 +59,19 @@ class View extends Backbone.View
     el passed in as an option.
     ###
     ensureClass: (el, className=@className) ->
+        if el.jQuery then return el.addClass(className)
+
         if not className then return
         wanted = className?.split(/\s+/) ? []
-        existing = el.className.split(/\s+/)
 
-        el.className = _.uniq(existing.concat(wanted)).join(' ')
+        switch typeof el.className
+            when 'string'
+                existing = el.className?.split(/\s+/) ? []
+                el.className = _.uniq(existing.concat(wanted)).join(' ')
+            when 'object'
+                # SVG Element or child
+                existing = el.className?.baseVal?.split(/\s+/) ? []
+                el.className?.baseVal = _.uniq(existing.concat(wanted)).join(' ')
 
     ###
     Adds a list of views as children of this view.
