@@ -22,14 +22,14 @@ View Heirarchy
 
 The view heirarchy allows traversal and event bubbling. A view can be added as a parent or a child.
 
-``` javascript
+```javascript
 var one = new View()
 var two = new View()
 
 view1.setParent(view2)
 ```
 
-``` javascript
+```javascript
 var one = new View()
 var two = new View()
 view2.addChild(view1)
@@ -39,14 +39,14 @@ Adding a child view will automatically set the child's parent view to yourself. 
 
 You can construct a view with a parent:
 
-``` javascript
+```javascript
 var one = new View()
 var two = new View({ parent: one })
 ```
 
 Also with children:
 
-``` javascript
+```javascript
 var two = new View()
 var one = new View({ children: [ two ] })
 ```
@@ -55,7 +55,7 @@ var one = new View({ children: [ two ] })
 
 You can access parents and children with simple traversal functions.
 
-``` javascript
+```javascript
 one.hasParent() //Boolean: If you have a parent
 one.getParent() //View: Your parent
 one.hasChildren() //Boolean: If you have any children
@@ -73,7 +73,7 @@ To help with cleanup, `view.remove()` will do a depth-first traversal calling re
 
 Events triggered on one view bubble through each parent view before finally stopping on root.
 
-```
+```javascript
 var root = new View()
 var child = new View({ parent: root })
 child.trigger('foo') // 'foo' will also trigger on the parent view.
@@ -92,7 +92,7 @@ Models can define derived values. Derived values are model properties that exist
 
 Edit `model.derived` to define derived values.
 
-```
+```javascript
 var MyModel = Model.extend({
     derived: {
         'foo': {
@@ -111,7 +111,7 @@ Derived values cannot be set, only accessed. All dependencies are passed in-orde
 
 Using the definition from before:
 
-```
+```javascript
 var m = new MyModel({
     bar: 'Hello',
     baz: 'world'
