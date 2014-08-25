@@ -79,13 +79,51 @@ var child = new View({ parent: root })
 child.trigger('foo') // 'foo' will also trigger on the parent view.
 ```
 
-If you have concerns about event names clashing, you add the namespace property to your views either at construction with the options object or at definition with the View prototype.
+If you have concerns about event names clashing you can add the namespace property to your views either at construction with the options object or at definition with the View prototype.
 
 This helps reduce the need to propagate events manually, and also gives you a common event bus for all views within a view tree. Even if two views belong on completely separate branches, they share the same root element.
 
 Derived Values
 --------------
 
-Derived values in models let you define model properties that exist as a result of passing other values through a function. They are accessed with the key function like other Model attributes and trigger change events when their dependencies change.
+Models can define derived values. Derived values are model properties that exist as a result of passing other values through a function. They are accessed with the get function like other Model attributes and trigger change events when their dependencies change.
 
 #### Definition
+
+Edit `model.derived` to define derived values.
+
+```
+var MyModel = Model.extend({
+    derived: {
+        'foo': {
+            deps: [ 'bar', 'baz' ],
+            value: function(bar, baz) {
+                return 'bar' + ', ' + 'baz' + '!'
+            }
+        }
+    }
+})
+```
+
+### Access
+
+Derived values cannot be set, only accessed. All dependencies are passed in-order to the value function per calculation and if any of the are changed, a change event will also be fired for the derived value.
+
+Using the definition from before:
+
+```
+var m = new MyModel({
+    bar: 'Hello',
+    baz: 'world'
+})
+
+m.get('foo') //'Hello, world!'
+
+m.on('change:foo', function(value) {
+    console.log(value)
+})
+
+m.set('baz', 'developer') //
+```
+
+When `baz` is set to `'developer'`, the `change:foo` event fires and `'Hello, developer!'` will be logged to the console.
