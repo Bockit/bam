@@ -1,7 +1,7 @@
 {
   "name": "bamjs",
   "version": "0.7.6",
-  "description": "Backbone with modifications. Adds heirarchy to Views, turns Views into Finite State Machines, adds a mixin for decorating methods and adds utility functions to Models and Collections.",
+  "description": "Backbone with modifications. Adds heirarchy to Views, derived properties on Models and general utility.",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,27 +12,25 @@
   },
   "keywords": [
     "backbone",
-    "fsm",
-    "finite",
-    "state",
-    "machine",
     "heirachy",
     "heirachical",
-    "view",
-    "mvc",
-    "decorators"
+    "bam",
+    "derived"
   ],
-  "author": "James Hiscock",
-  "license": "BSD",
+  "author": {
+    "name": "James Hiscock",
+    "email": "npm@jameshiscock.com",
+    "url": "http://jameshiscock.com"
+  },
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Bockit/bam/issues"
   },
   "dependencies": {
-    "backbone": "~1.0.0",
-    "underscore": "~1.5.1"
+    "backbone": "^1.1.2",
+    "underscore": "^1.6.0"
   },
   "devDependencies": {
-    "browserify": "~2.27.1",
-    "coffee-script": "~1.6.3"
+    "coffee-script": "^1.7.1"
   }
 }

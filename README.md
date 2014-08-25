@@ -6,68 +6,86 @@ Bam
 Introduction
 ------------
 
-Bam is a library intended to aid in the development of webapps. It uses Backbone as a base for its classes, adding methods and classes for common tasks.
+Bam is an extension to Backbone. It extends the core Backbone classes with common utility functions and a some new functionality:
 
-There are two core ideas to Bam; firstly that views for a webapp can be arranged in a tree-like data structure and secondly that views are finite state machines.
+* View heirarchy
+    * Parent/child relationships
+    * Event bubbling
+* Derived values in models
 
-API
----
+Over time, Bam's philosophy has changed from all extensions you may want to only those extensions that can't be achieved as standalone modules.
 
-Each Model, Collection and View inherits everything from Backbone's Model, Collection and View.
+When reading the rest, remember that you get everything else Backbone gives you for each class.
 
-#### Bam.View
+View Heirarchy
+--------------
 
-A Bam View is a tree and, separately, a finite state machine. The tree helps with the hierarchy of components, and the finite state machine helps with transferring user interactions and data changes into interface actions.
+The view heirarchy allows traversal and event bubbling. A view can be added as a parent or a child.
 
-#### Bam.Model
+``` javascript
+var one = new View()
+var two = new View()
 
-Models have everything a Backbone Model has, with a couple of utility functions for accessing models before and after them in a collection.
+view1.setParent(view2)
+```
 
-###### next()
+``` javascript
+var one = new View()
+var two = new View()
+view2.addChild(view1)
+```
 
-If the model is in a collection, this will return the model at the index directly after the index of this model. I.e., if you are the 2nd model in a collection it will return the third.
+Adding a child view will automatically set the child's parent view to yourself. Similarly, setting a parent view will automatically add yourself as a child of the parent.
 
-If the model is not in a collection it will return `null`. If the model is the last model in a collection it will also return `null`.
+You can construct a view with a parent:
 
+``` javascript
+var one = new View()
+var two = new View({ parent: one })
+```
 
-###### prev()
+Also with children:
 
-`prev()` works the same as `next()`. The difference it just moves the reverse direction. If the model is the first in a collection then `prev()` will return `null`.
+``` javascript
+var two = new View()
+var one = new View({ children: [ two ] })
+```
 
+#### Traversal
 
-#### Bam.Collection
+You can access parents and children with simple traversal functions.
 
-Collections have everything a Backbone Collection has, with a couple of utility functions for getting the models before and after other models in the collection.
+``` javascript
+one.hasParent() //Boolean: If you have a parent
+one.getParent() //View: Your parent
+one.hasChildren() //Boolean: If you have any children
+one.getChildren() //Array: All your children
+one.hasChild(two) //Boolean: if any child is the view
+one.hasDescendant(two) //Boolean: if any child or child's child is the view
+two.root() //View: your root view, or youself if you are the root view
+```
 
+#### Removal
 
-###### before(model)
+To help with cleanup, `view.remove()` will do a depth-first traversal calling remove on all children and grandchildren before finally removing itself.
 
-Gets the model before the model `model` in the collection. Ideally used in a collection with a comparator so there is some kind of sort order.
+#### Event Bubbling
 
-Returns `null` if the model doesn't exist in the collection or if the model is the first in the collection.
+Events triggered on one view bubble through each parent view before finally stopping on root.
 
+```
+var root = new View()
+var child = new View({ parent: root })
+child.trigger('foo') // 'foo' will also trigger on the parent view.
+```
 
-###### after(model)
+If you have concerns about event names clashing, you add the namespace property to your views either at construction with the options object or at definition with the View prototype.
 
-Same as `before(model)` but looks for the model afterwards.
+This helps reduce the need to propagate events manually, and also gives you a common event bus for all views within a view tree. Even if two views belong on completely separate branches, they share the same root element.
 
-Returns `null` if the model doesn't exist in the collection or if the model is the last in the collection.
+Derived Values
+--------------
 
+Derived values in models let you define model properties that exist as a result of passing other values through a function. They are accessed with the key function like other Model attributes and trigger change events when their dependencies change.
 
-Usage
------
-
-#### Adding to the page
-
-#### Examples
-
-API
----
-
-
-TODO
-----
-
-* Documentation
-* BAM! logo
-* Change from `eventPrefix` to `namespace`
+#### Definition

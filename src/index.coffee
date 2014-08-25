@@ -1,6 +1,5 @@
 module.exports =
-    Backbone: require('backbone')
+    Backbone: require('./backbone')
     Collection: require('./collection')
     Model: require('./model')
     View: require('./view')
-    Decoratable: require('./decoratable')

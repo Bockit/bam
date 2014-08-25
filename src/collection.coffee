@@ -1,18 +1,6 @@
 Backbone = require('backbone')
-Decoratable = require('./decoratable.js')
 
 class Collection extends Backbone.Collection
-
-    ###
-    Inline functionality to mixin classes
-
-    `@::mixin(ClassName)` is how you do it.
-    ###
-    mixin: (Class) ->
-        for key, value of Class::
-            @[key] = value
-
-    @::mixin(Decoratable)
 
     ###
     Returns the model at the index immediately before the passed in model

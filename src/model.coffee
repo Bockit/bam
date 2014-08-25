@@ -1,20 +1,48 @@
 Backbone = require('backbone')
-_ = require('underscore')
+{ map, any } = require('underscore')
 
-Decoratable = require('./decoratable.js')
+DEFAULT_CASTS =
+    string: (v) -> v + ''
+    int: (v) -> Math.floor(+v)
+    number: (v) -> +v
+    date: (v) -> new Date(v)
+    boolean: (v) -> !!v
 
 class Model extends Backbone.Model
+    ###
+    Allows derived get values. The format is:
+
+    derived:
+        foo:
+            deps: ['bar', 'baz']
+            value: (bar, baz) -> bar + ' ' + baz
+
+    Your deps define which properties will be passed to the value function and
+    in what order. They're also used to trigger change events for derived values
+    i.e., if a dep changes the derived value will trigger a change too.
+    ###
+    derived: {}
 
     ###
-    Inline functionality to mixin classes
+    Allows casting specific keys. The format is:
 
-    `@::mixin(ClassName)` is how you do it.
+    cast:
+        timestamp: (v) -> moment(v)
+        bar: 'string'
+        baz: 'int'
+
+    You can either provide your own function or use a provided basic cast. These
+    include:
+
+        * `'string'`: `(v) -> v + ''`
+        * `'int'`: `(v) -> Math.floor(+v)`
+        * `'number'`: `(v) -> +v`
+        * `'date'`: `(v) -> new Date(v)`
+        * `'boolean'`: (v) -> !!v
+
+    Doesn't cast derived or null values.
     ###
-    mixin: (Class) ->
-        for key, value of Class::
-            @[key] = value
-
-    @::mixin(Decoratable)
+    cast: {}
 
     ###
     Returns the model after this model in its collection. If it's not in a
@@ -29,6 +57,29 @@ class Model extends Backbone.Model
     prev: -> @collection?.before(@)
 
     ###
+    Returns a clone of the attributes object.
+    ###
+    getAttributes: ->
+        return Backbone.$.extend(true, {}, @attributes)
+
+    ###
+    Override get to allow default value and derived values.
+    ###
+    get: (key, defaultValue) ->
+        if @derived[key]
+            ret = @_derive(derived[key])
+        else
+            ret = super(key)
+        return if ret is undefined then defaultValue else ret
+
+    ###
+    Derive a value from a definition
+    ###
+    _derive: (definition) ->
+        args = map(definition.deps, (key) => @get('key'))
+        return definition.value(args...)
+
+    ###
     Override the set method to allow for casting as data comes in.
     ###
     set: (key, val, options) ->
@@ -39,19 +90,26 @@ class Model extends Backbone.Model
             attrs = {}
             attrs[key] = val
 
-        if @types
-            for key, val of attrs
-                unless _.isUndefined(@types[key])
-                    attrs[key] = @cast(val, @types[key])
+        for key, val of attrs
+            continue if val is null
+            if @cast[key] then attrs[key] = @_cast(val, @cast[key])
 
-        return super(attrs, options)
+        ret = super(attrs, options)
+
+        for derived, definition of @derived
+            changed = map(definition.deps, (key) -> attrs.hasOwnProperty(key))
+            if any(changed)
+                @trigger("change:#{derived}", @_derive(definition))
+
+
+        return ret
 
     ###
     Take a value, and a casting definition and perform the cast
     ###
-    cast: (value, cast) ->
+    _cast: (value, cast) ->
         try
-            value = @getCastFunc(cast)(value)
+            value = @_getCastFunc(cast)(value)
         catch error
             value = null
         finally
@@ -60,14 +118,8 @@ class Model extends Backbone.Model
     ###
     Given a casting definition, return a function that should perform the cast
     ###
-    getCastFunc: (cast) ->
-        if _.isFunction(cast) then return cast
-
-        return switch cast
-            when 'string' then ((v) -> if v is null then null else v + '')
-            when 'int' then ((v) -> if v is null then null else Math.floor(+v))
-            when 'float' then ((v) -> if v is null then null else +v)
-            when 'boolean' then ((v) -> if v is null then null else !!v)
-            else (v) -> v
+    _getCastFunc: (cast) ->
+        if typeof cast is 'function' then return cast
+        return DEFAULT_CASTS[cast] ? (v) -> v
 
 module.exports = Model
