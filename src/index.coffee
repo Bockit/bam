@@ -1,5 +1,6 @@
 module.exports =
     Backbone: require('./backbone')
-    Collection: require('./collection')
-    Model: require('./model')
+    Router: require('./router')
     View: require('./view')
+    Model: require('./model')
+    Collection: require('./collection')
