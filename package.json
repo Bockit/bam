@@ -28,9 +28,9 @@
   },
   "dependencies": {
     "backbone": "^1.1.2",
-    "underscore": "^1.6.0"
+    "underscore": "^1.7.0"
   },
   "devDependencies": {
-    "coffee-script": "^1.7.1"
+    "coffee-script": "^1.8.0"
   }
 }
