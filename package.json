@@ -22,7 +22,7 @@
     "email": "npm@jameshiscock.com",
     "url": "http://jameshiscock.com"
   },
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/Bockit/bam/issues"
   },
