@@ -46,15 +46,24 @@ class View extends Backbone.View
     Adds a view as a child of this view.
     ###
     addChild: (view) ->
+        if view.parent then view.unsetParent()
         @children.push(view)
         view.parent = @
 
     ###
-    Sets the parent element of the view.
+    Sets the parent view.
     ###
     setParent: (parent) ->
+        if @parent then @unsetParent()
         @parent = parent
-        @parent?.children.push(@)
+        @parent.children.push(@)
+
+    ###
+    Unsets the parent view.
+    ###
+    unsetParent: ->
+        return unless @parent
+        @parent.removeChild(@)
 
     ###
     Parent and Child accessors.
@@ -77,7 +86,7 @@ class View extends Backbone.View
 
     removeChild: (child) ->
         @children = without(@children, child)
-        child.setParent(null)
+        child.parent = null
 
     removeChildren: (children) ->
         for child in @children
