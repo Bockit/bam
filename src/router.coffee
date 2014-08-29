@@ -35,7 +35,8 @@ class Router extends Backbone.Router
         super(args...)
 
     ###
-    Override route to perform some subtle tweaks!
+    Override route to perform some subtle tweaks! Namely, storing raw string
+    routes for reverse routing and passing the name to the buildRequest function
     ###
     route: (route, name, callback) ->
         unless isRegExp(route)
@@ -65,7 +66,7 @@ class Router extends Backbone.Router
         return ret
 
     ###
-    Create a request object. It should have the route name, named segments as
+    Create a request object. It should have the route name, named params as
     keys with their values and a query object which is the query params, an
     empty object if no query params available.
     ###
@@ -78,7 +79,8 @@ class Router extends Backbone.Router
         names = route.names ? values.map((v, i) -> return i)
 
         req =
-            route: route
+            # Regex routes aren't stored in @_routes and are what we want anyway
+            route: @_routes[name] ? route
             fragment: fragment
             name: name
             values: values
@@ -86,6 +88,11 @@ class Router extends Backbone.Router
             query: querystring.parse(query)
 
         return req
+
+    ###
+    No-op to stop the routes propery being used
+    ###
+    _bindRoutes: ->
 
     ###
     Rather than the default backbone behaviour of applying the args to the

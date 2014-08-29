@@ -64,7 +64,8 @@
 
 
     /*
-    Override route to perform some subtle tweaks!
+    Override route to perform some subtle tweaks! Namely, storing raw string
+    routes for reverse routing and passing the name to the buildRequest function
      */
 
     Router.prototype.route = function(route, name, callback) {
