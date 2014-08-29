@@ -264,6 +264,6 @@ In normal backbone Routers you can define routes as a property of your Router cl
 Api
 ---
 
-See the [wiki][wiki] for the API.
+See the [wiki][wiki] for the full API.
 
 [wiki]: https://github.com/bockit/bam/wiki
