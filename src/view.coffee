@@ -1,5 +1,5 @@
-Backbone = require('backbone')
-{ without, difference } = require('underscore')
+Backbone = require('./backbone')
+{ without, difference } = require('./underscore')
 
 class View extends Backbone.View
 

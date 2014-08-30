@@ -1,8 +1,8 @@
-Backbone = require('backbone')
+Backbone = require('./backbone')
 querystring = require('querystring')
-_ = require('underscore')
+_ = require('./underscore')
 { extend, object, isRegExp, isFunction, zip, pluck, sortBy, keys } = _
-{ difference } = _
+{ difference, map } = _
 
 getNames = (string) ->
     ret = []
@@ -61,7 +61,7 @@ class Router extends Backbone.Router
         ret = super(route)
 
         names = getNames(route)
-        ret.names = pluck(sortBy(names, '1'), '0').map((s) -> s.slice(1))
+        ret.names = map(pluck(sortBy(names, '1'), '0'), (s) -> s.slice(1))
 
         return ret
 
@@ -76,7 +76,7 @@ class Router extends Backbone.Router
         query = fragment.split('?').slice(1).join('?')
         if values[values.length - 1] is query
             values = values.slice(0, -1)
-        names = route.names ? values.map((v, i) -> return i)
+        names = route.names ? map(values, (v, i) -> return i)
 
         req =
             # Regex routes aren't stored in @_routes and are what we want anyway
@@ -116,7 +116,7 @@ class Router extends Backbone.Router
         optionals = process(route, /\((.*?)\)/g).reverse()
         for [optional, lastIndex] in optionals
             # Get the named parameters
-            nameds = pluck(getNames(optional), '0').map((s) -> s.slice(1))
+            nameds = map(pluck(getNames(optional), '0'), (s) -> s.slice(1))
 
             # If there are no named parameters or we don't have all of them
             diff = difference(nameds, names).length

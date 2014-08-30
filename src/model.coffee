@@ -1,5 +1,5 @@
-Backbone = require('backbone')
-{ map, any } = require('underscore')
+Backbone = require('./backbone')
+{ map, any } = require('./underscore')
 
 DEFAULT_CASTS =
     string: (v) -> v + ''

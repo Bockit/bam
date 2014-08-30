@@ -8,7 +8,8 @@
     "url": "git://github.com/Bockit/bam.git"
   },
   "scripts": {
-    "prepublish": "coffee -o . -c src"
+    "prepublish": "coffee -o . -c src",
+    "dist": "mkdir -p dist; browserify -t coffeeify --extension .coffee src/index.coffee --standalone Bam --ignore backbone --ignore underscore > dist/bam.js"
   },
   "keywords": [
     "backbone",
@@ -31,6 +32,8 @@
     "underscore": "^1.7.0"
   },
   "devDependencies": {
-    "coffee-script": "^1.8.0"
+    "coffee-script": "^1.8.0",
+    "coffeeify": "~0.7.0",
+    "browserify": "~5.11.0"
   }
 }

@@ -1,4 +1,4 @@
-Backbone = require('backbone')
+Backbone = require('./backbone')
 
 class Collection extends Backbone.Collection
 

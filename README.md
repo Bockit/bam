@@ -23,6 +23,15 @@ Over time, Bam's philosophy has changed from all extensions you may want to only
 
 Beyond the new functionality and utility methods added to the classes they still function the same as the original Backbone classes. With the exception of the Router. 
 
+Usage
+-----
+
+You can install from npm and use whatever commonjs build system you'd like to import it. Browserify is recommended because it requires `querystring`.
+
+`npm install bamjs`
+
+If you're not using npm a [UMD module is available][umd_module].
+
 View Heirarchy
 --------------
 
@@ -267,3 +276,4 @@ Api
 See the [wiki][wiki] for the full API.
 
 [wiki]: https://github.com/bockit/bam/wiki
+[umd_module]: https://github.com/bockit/bam/wiki
