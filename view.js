@@ -6,9 +6,9 @@
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = [].slice;
 
-  Backbone = require('backbone');
+  Backbone = require('./backbone');
 
-  _ref = require('underscore'), without = _ref.without, difference = _ref.difference;
+  _ref = require('./underscore'), without = _ref.without, difference = _ref.difference;
 
   View = (function(_super) {
     __extends(View, _super);

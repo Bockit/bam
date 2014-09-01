@@ -5,11 +5,11 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __slice = [].slice;
 
-  Backbone = require('backbone');
+  Backbone = require('./backbone');
 
   querystring = require('querystring');
 
-  _ = require('underscore');
+  _ = require('./underscore');
 
   extend = _.extend, object = _.object, isRegExp = _.isRegExp, isFunction = _.isFunction, zip = _.zip, pluck = _.pluck, sortBy = _.sortBy, keys = _.keys;
 

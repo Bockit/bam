@@ -27,8 +27,8 @@ splice = (source, from, to, replacement='') ->
 class Router extends Backbone.Router
 
     ###
-    Override so our _routes object is unique to each router. I hate this side of
-    js.
+    Override so our _routes object is unique to each router.
+    I hate this side of js.
     ###
     constructor: (args...) ->
         @_routes = {}

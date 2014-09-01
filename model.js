@@ -4,9 +4,9 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  Backbone = require('backbone');
+  Backbone = require('./backbone');
 
-  _ref = require('underscore'), map = _ref.map, any = _ref.any;
+  _ref = require('./underscore'), map = _ref.map, any = _ref.any;
 
   DEFAULT_CASTS = {
     string: function(v) {
