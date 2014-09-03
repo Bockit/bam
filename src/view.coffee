@@ -84,6 +84,9 @@ class View extends Backbone.View
 
         return false
 
+    ###
+    Removing children
+    ###
     removeChild: (child) ->
         @children = without(@children, child)
         child.parent = null
@@ -123,6 +126,13 @@ class View extends Backbone.View
         if @namespace then args[0] = @namespace + '.' + args[0]
 
         # Trigger the root namespaced event
-        if @parent then @parent.trigger.apply(@parent, args)
+        if @parent then @parent._bubbleTrigger.apply(@parent, args)
+
+    ###
+    Used when bubbling to prevent namespace pollution as it goes up the chain.
+    ###
+    _bubbleTrigger: (args...) ->
+        Backbone.View::trigger.apply(@, args)
+        if @parent then @parent._bubbleTrigger.apply(@parent, args)
 
 module.exports = View
