@@ -17,7 +17,7 @@ class View extends Backbone.View
     are passed in. Does the normal backbone constructor and then does the
     first state change.
     ###
-    constructor: (options) ->
+    constructor: (options={}) ->
         @children = []
 
         if options.className then @className = options.className
