@@ -1,6 +1,8 @@
 Bam
 =====
 
+![Build status](https://api.travis-ci.org/Bockit/bam.svg?branch=master)
+
 *B.A.M*
 
 Introduction
