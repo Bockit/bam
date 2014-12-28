@@ -1,7 +1,6 @@
 var test = require('tape')
 
-test('Instantiation', function(t) {
-    t.plan(1)
-    t.ok('It worked')
-    t.end()
-})
+require('./collection')(test)
+require('./model')(test)
+require('./router')(test)
+require('./view')(test)
