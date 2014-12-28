@@ -28,6 +28,9 @@
 
     function View(options) {
       var _ref1;
+      if (options == null) {
+        options = {};
+      }
       this.children = [];
       if (options.className) {
         this.className = options.className;
@@ -153,6 +156,11 @@
       return false;
     };
 
+
+    /*
+    Removing children
+     */
+
     View.prototype.removeChild = function(child) {
       this.children = without(this.children, child);
       return child.parent = null;
@@ -213,7 +221,21 @@
         args[0] = this.namespace + '.' + args[0];
       }
       if (this.parent) {
-        return this.parent.trigger.apply(this.parent, args);
+        return this.parent._bubbleTrigger.apply(this.parent, args);
+      }
+    };
+
+
+    /*
+    Used when bubbling to prevent namespace pollution as it goes up the chain.
+     */
+
+    View.prototype._bubbleTrigger = function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      Backbone.View.prototype.trigger.apply(this, args);
+      if (this.parent) {
+        return this.parent._bubbleTrigger.apply(this.parent, args);
       }
     };
 

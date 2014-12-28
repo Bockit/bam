@@ -51,8 +51,8 @@
 
 
     /*
-    Override so our _routes object is unique to each router. I hate this side of
-    js.
+    Override so our _routes object is unique to each router.
+    I hate this side of js.
      */
 
     function Router() {
