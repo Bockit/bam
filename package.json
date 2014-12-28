@@ -10,7 +10,7 @@
   "scripts": {
     "prepublish": "coffee -o . -c src",
     "dist": "mkdir -p dist; browserify -t coffeeify --extension .coffee src/index.coffee --standalone Bam --ignore backbone --ignore underscore > dist/bam.js",
-    "test": "tape tests/index.js"
+    "test": "zuul --local 8080 -- tests/index.js"
   },
   "keywords": [
     "backbone",
@@ -36,6 +36,8 @@
     "browserify": "~5.11.0",
     "coffee-script": "^1.8.0",
     "coffeeify": "~0.7.0",
-    "tape": "^3.0.3"
+    "tape": "^3.0.3",
+    "zuul": "^1.16.3",
+    "zuulnice": "^1.0.0"
   }
 }
