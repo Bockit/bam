@@ -79,8 +79,8 @@
      */
 
     Model.prototype.next = function() {
-      var _ref1;
-      return (_ref1 = this.collection) != null ? _ref1.after(this) : void 0;
+      var _ref1, _ref2;
+      return (_ref1 = (_ref2 = this.collection) != null ? _ref2.after(this) : void 0) != null ? _ref1 : null;
     };
 
 
@@ -90,8 +90,8 @@
      */
 
     Model.prototype.prev = function() {
-      var _ref1;
-      return (_ref1 = this.collection) != null ? _ref1.before(this) : void 0;
+      var _ref1, _ref2;
+      return (_ref1 = (_ref2 = this.collection) != null ? _ref2.before(this) : void 0) != null ? _ref1 : null;
     };
 
 
