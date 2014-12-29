@@ -67,7 +67,7 @@ class Model extends Backbone.Model
     ###
     get: (key, defaultValue) ->
         if @derived[key]
-            ret = @_derive(derived[key])
+            ret = @_derive(@derived[key])
         else
             ret = super(key)
         return if ret is undefined then defaultValue else ret
@@ -76,7 +76,7 @@ class Model extends Backbone.Model
     Derive a value from a definition
     ###
     _derive: (definition) ->
-        args = map(definition.deps, (key) => @get('key'))
+        args = map(definition.deps, (key) => @get(key))
         return definition.value(args...)
 
     ###
@@ -122,6 +122,6 @@ class Model extends Backbone.Model
     ###
     _getCastFunc: (cast) ->
         if typeof cast is 'function' then return cast
-        return DEFAULT_CASTS[cast] ? (v) -> v
+        return DEFAULT_CASTS[cast]
 
 module.exports = Model

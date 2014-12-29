@@ -111,7 +111,7 @@
     Model.prototype.get = function(key, defaultValue) {
       var ret;
       if (this.derived[key]) {
-        ret = this._derive(derived[key]);
+        ret = this._derive(this.derived[key]);
       } else {
         ret = Model.__super__.get.call(this, key);
       }
@@ -131,7 +131,7 @@
       var args;
       args = map(definition.deps, (function(_this) {
         return function(key) {
-          return _this.get('key');
+          return _this.get(key);
         };
       })(this));
       return definition.value.apply(definition, args);
@@ -197,13 +197,10 @@
      */
 
     Model.prototype._getCastFunc = function(cast) {
-      var _ref1;
       if (typeof cast === 'function') {
         return cast;
       }
-      return (_ref1 = DEFAULT_CASTS[cast]) != null ? _ref1 : function(v) {
-        return v;
-      };
+      return DEFAULT_CASTS[cast];
     };
 
     return Model;
