@@ -1,6 +1,8 @@
 Backbone = require('./backbone')
+Model = require('./model')
 
 class Collection extends Backbone.Collection
+    model: Model
 
     ###
     Returns the model at the index immediately before the passed in model
