@@ -1,8 +1,8 @@
 var Collection = require('../collection')
 var Model = require('../model')
 
-module.exports = function(test) {
-    test('Collection utilities', function(t) {
+module.exports = function (test) {
+    test('Collection utilities', function (t) {
         t.plan(3)
 
         var c = new Collection([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }])
