@@ -3,7 +3,7 @@ Bam
 
 ![Build status](https://api.travis-ci.org/Bockit/bam.svg?branch=master)
 
-*B.A.M*
+Bam is automatically tested in IE9-10, and the latest versions of other browsers. It has been used in production in IE7, IE8 and many previous versions of other browsers.
 
 Introduction
 ------------
