@@ -48,13 +48,13 @@ class Model extends Backbone.Model
     Returns the model after this model in its collection. If it's not in a
     collection this will return null.
     ###
-    next: -> @collection?.after(@)
+    next: -> @collection?.after(@) ? null
 
     ###
     Returns the model before this model in its collection. If it's not in a
     collection this will return null.
     ###
-    prev: -> @collection?.before(@)
+    prev: -> @collection?.before(@) ? null
 
     ###
     Returns a clone of the attributes object.
@@ -94,6 +94,8 @@ class Model extends Backbone.Model
             continue if val is null
             if @cast[key] then attrs[key] = @_cast(val, @cast[key])
 
+        # Do this before derived values so any events for what was actually set
+        # are triggered before derived change events are fired.
         ret = super(attrs, options)
 
         for derived, definition of @derived
