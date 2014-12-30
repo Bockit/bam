@@ -8,7 +8,6 @@
     "url": "git://github.com/Bockit/bam.git"
   },
   "scripts": {
-    "prepublish": "coffee -o . -c src",
     "dist": "mkdir -p dist; browserify -t coffeeify --extension .coffee src/index.coffee --standalone Bam --ignore backbone --ignore underscore > dist/bam.js",
     "test": "zuul -- tests/index.js",
     "test-local": "zuul --local 8080 -- tests/index.js"
