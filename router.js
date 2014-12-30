@@ -118,7 +118,7 @@
       var names, query, req, values, _ref, _ref1;
       values = this._extractParameters(route, fragment);
       query = fragment.split('?').slice(1).join('?');
-      if (values[values.length - 1] === query) {
+      if (route.names) {
         values = values.slice(0, -1);
       }
       names = (_ref = route.names) != null ? _ref : map(values, function(v, i) {

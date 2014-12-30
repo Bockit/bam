@@ -72,9 +72,10 @@ class Router extends Backbone.Router
     ###
     _buildRequest: (route, fragment, name) ->
         values = @_extractParameters(route, fragment)
-        # Passes the query string as the last cell in the array. Get rid of it!
         query = fragment.split('?').slice(1).join('?')
-        if values[values.length - 1] is query
+        # Passes the query string as the last cell in the array. Get rid of it!
+        # Only for non-regex routes
+        if (route.names)
             values = values.slice(0, -1)
         names = route.names ? map(values, (v, i) -> return i)
 
