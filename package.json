@@ -1,6 +1,6 @@
 {
   "name": "bamjs",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Backbone with modifications. Adds heirarchy to Views, derived properties on Models and general utility.",
   "main": "index.js",
   "repository": {
