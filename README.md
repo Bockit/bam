@@ -277,5 +277,10 @@ Api
 
 See the [wiki][wiki] for the full API.
 
+Changelog
+---------
+
+* **2.0.0** - Subtle breaking changes made during the port from CS to JS. Not catching errors and returning null when cast functions in models throw errors.
+
 [wiki]: https://github.com/bockit/bam/wiki
 [umd_module]: https://github.com/bockit/bam/wiki
