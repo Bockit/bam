@@ -3,7 +3,7 @@ var Model = require('../model')
 
 module.exports = function (test) {
     test('Model utilities', function (t) {
-        t.plan(7)
+        t.plan(8)
         var one = new Model()
         var two = new Model()
         var c = new Collection([ one, two ])
@@ -17,6 +17,7 @@ module.exports = function (test) {
         t.equal(m.next(), null, '.next() when not in a collection')
         t.equal(m.prev(), null, '.prev() when not in a collection')
         t.notEqual(m.attributes, m.getAttributes(), '.getAttributes() referentially different to .attributes')
+        t.equal(m.get('foo', 'a'), 'a', 'Default value for get')
 
         t.end()
     })
