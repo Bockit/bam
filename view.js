@@ -31,7 +31,7 @@ module.exports = Backbone.View.extend({
             this.addChildren(options.children)
         }
 
-        return Backbone.View.prototype.constructor.apply(this, options)
+        return Backbone.View.prototype.constructor.call(this, options)
     }
 
     /**
