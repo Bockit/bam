@@ -167,7 +167,7 @@ module.exports = Backbone.Router.extend({
         }
 
         // Replace nameds
-        nameds = getNameds(route).reverse()
+        nameds = getNames(route).reverse()
         for (var i = 0; i < nameds.length; i++) {
             var segment = nameds[i][0]
             var lastIndex = nameds[i][1]
