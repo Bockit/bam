@@ -144,7 +144,7 @@ module.exports = Backbone.Router.extend({
         var names = keys(params)
 
         // Step through the optional params
-        var options = process(route, /\((.*?)\)/g).reverse()
+        var optionals = process(route, /\((.*?)\)/g).reverse()
         for (var i = 0; i < optionals.length; i++) {
             var optional = optionals[i][0]
             var lastIndex = optionals[i][1]
