@@ -33,6 +33,6 @@ module.exports = Backbone.Collection.extend({
      * collection
      */
   , all: function () {
-        this.models.slice()
+        return this.models.slice()
     }
 })
