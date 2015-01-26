@@ -279,6 +279,9 @@ See the [wiki][wiki] for the full API.
 
 Changelog
 ---------
+* **2.0.4** - Collection.all now correctly returns the models array
+* **2.0.3** - Fixed bug in reverse routing introduced by CS -> JS
+* **2.0.2** - Fixed bug in reverse routing introduced by CS -> JS
 
 * **2.0.0** - Subtle breaking changes made during the port from CS to JS. Not catching errors and returning null when cast functions in models throw errors.
 
