@@ -279,6 +279,7 @@ See the [wiki][wiki] for the full API.
 
 Changelog
 ---------
+* **2.0.5** - Router.reverse now correctly handles empty string routes
 * **2.0.4** - Collection.all now correctly returns the models array
 * **2.0.3** - Fixed bug in reverse routing introduced by CS -> JS
 * **2.0.2** - Fixed bug in reverse routing introduced by CS -> JS
