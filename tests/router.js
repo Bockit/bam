@@ -22,6 +22,7 @@ module.exports = function (test) {
                 this.route('optional(/:foo)', 'optional', this.optional)
                 this.route('params-and-optional(/:foo)/:bar', 'paramsAndOptional', this.paramsAndOptional)
                 this.route('query-string', 'queryString', this.queryString)
+                this.route('', 'empty', this.empty)
                 this.route(/regex\/(\w+)\/(\w+)/, 'regex', this.regex)
             }
 
@@ -100,7 +101,7 @@ module.exports = function (test) {
 
         })
 
-        t.plan(21)
+        t.plan(22)
 
         router = new TestRouter()
         Backbone.history.start({ pushState: false })
@@ -113,6 +114,8 @@ module.exports = function (test) {
         router.navigate('params-and-optional/a/b', { trigger: true })
         router.navigate('query-string?foo=a&bar=b%20c', { trigger: true })
         router.navigate('regex/a/b', { trigger: true })
+
+        t.equal(router.reverse('empty', {}), '', 'Reversing an empty route')
 
         // Cleanup for refreshing the local test page
         router.navigate('')

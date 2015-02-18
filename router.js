@@ -136,7 +136,7 @@ module.exports = Backbone.Router.extend({
      */
   , reverse: function (name, req) {
         var route = this._routes[name]
-        if (!route) return null
+        if (route == null) return null
 
         var ret = route
         var params = req.params || {}
