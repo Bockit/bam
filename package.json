@@ -1,6 +1,6 @@
 {
   "name": "bamjs",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "Backbone with modifications. Adds heirarchy to Views, derived properties on Models and general utility.",
   "main": "index.js",
   "repository": {
@@ -29,7 +29,7 @@
     "url": "https://github.com/Bockit/bam/issues"
   },
   "dependencies": {
-    "backbone": "^1.1.2",
+    "backbone": "1.1.2",
     "underscore": "^1.7.0"
   },
   "devDependencies": {
